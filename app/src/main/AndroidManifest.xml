@@ -18,7 +18,7 @@
         <activity android:name=".displayHorse"></activity>
         <activity android:name=".viewOldDataMain" />
         <activity android:name=".saveNewData" />
-        <activity android:name=".bluetoothReadIn" />
+        <activity android:name=".bluetoothScan" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
