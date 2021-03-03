@@ -19,8 +19,8 @@ public class BleManager {
     private static BleManager mInstance = null;
 
     // Data
-    private BluetoothManager mManager;
-    private BluetoothAdapter mAdapter;
+    private BluetoothManager bluetoothManager;
+    private BluetoothAdapter bluetoothAdapter;
 
     public static BleManager getInstance() {
         if (mInstance == null) {
@@ -35,16 +35,16 @@ public class BleManager {
     public boolean start(Context context) {
 
         // Init Manager
-        mManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
+        bluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
 
         // Init Adapter
-        if (mManager != null) {
-            mAdapter = mManager.getAdapter();
+        if (bluetoothManager != null) {
+            bluetoothAdapter = bluetoothManager.getAdapter();
         } else {
-            mAdapter = null;
+            bluetoothAdapter = null;
         }
 
-        final boolean isEnabled = mAdapter != null && mAdapter.isEnabled();
+        final boolean isEnabled = bluetoothAdapter != null && bluetoothAdapter.isEnabled();
         if (!isEnabled) {
             Log.e(TAG, "Unable to obtain a BluetoothAdapter.");
         }
@@ -59,13 +59,13 @@ public class BleManager {
     }*/
 
     public void cancelDiscovery() {
-        if (mAdapter != null) {
-            mAdapter.cancelDiscovery();
+        if (bluetoothAdapter != null) {
+            bluetoothAdapter.cancelDiscovery();
         }
     }
 
     public boolean isAdapterEnabled() {
-        return mAdapter != null && mAdapter.isEnabled();
+        return bluetoothAdapter != null && bluetoothAdapter.isEnabled();
     }
 
     public @NonNull
@@ -73,11 +73,11 @@ public class BleManager {
         List<BluetoothDevice> connectedDevices = new ArrayList<>();
 
         // Check if already initialized
-        if (mManager == null) {
+        if (bluetoothManager == null) {
             return connectedDevices;
         }
 
-        List<BluetoothDevice> devices = mManager.getConnectedDevices(BluetoothProfile.GATT);
+        List<BluetoothDevice> devices = bluetoothManager.getConnectedDevices(BluetoothProfile.GATT);
         for (BluetoothDevice device : devices) {
             final int type = device.getType();
             if (type == BluetoothDevice.DEVICE_TYPE_LE || type == BluetoothDevice.DEVICE_TYPE_DUAL) {
@@ -87,5 +87,4 @@ public class BleManager {
 
         return connectedDevices;
     }
-
 }
