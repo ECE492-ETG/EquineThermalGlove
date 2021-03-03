@@ -1,4 +1,4 @@
-package com.example.equinethermalglove.ble;
+package com.example.equinethermalglove.bleResources;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;

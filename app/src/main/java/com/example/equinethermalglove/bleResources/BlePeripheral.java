@@ -1,4 +1,4 @@
-package com.example.equinethermalglove.ble;
+package com.example.equinethermalglove.bleResources;
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
@@ -18,8 +18,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
-import com.example.equinethermalglove.ble.BleUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;

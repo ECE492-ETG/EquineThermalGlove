@@ -1,4 +1,4 @@
-package com.example.equinethermalglove.ble;
+package com.example.equinethermalglove.bleResources;
 
 import android.os.ParcelUuid;
 import androidx.annotation.NonNull;
