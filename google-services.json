@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "997897989256",
+    "project_id": "etg-db",
+    "storage_bucket": "etg-db.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:997897989256:android:1692f9fb69a18ed267033d",
+        "android_client_info": {
+          "package_name": "com.example.equinethermalglove"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "997897989256-qq8vauotaed84e2gum8q869lnsl45ko5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCpKCzh1ouUDGeP8Jdet2Tjbh6KQK1B_Es"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "997897989256-qq8vauotaed84e2gum8q869lnsl45ko5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
