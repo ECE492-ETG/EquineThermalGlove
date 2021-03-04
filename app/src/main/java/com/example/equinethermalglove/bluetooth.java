@@ -129,6 +129,14 @@ public class bluetooth extends Service {
         sendBroadcast(intent);
     }
 
+    public void close() {
+        if (bluetoothGatt == null) {
+            return;
+        }
+        bluetoothGatt.close();
+        bluetoothGatt = null;
+    }
+
     // TODO: add logic for bluetooth connections
     public void newConn() {
 
