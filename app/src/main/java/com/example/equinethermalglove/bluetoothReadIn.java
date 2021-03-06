@@ -60,7 +60,10 @@ public class bluetoothReadIn extends AppCompatActivity {
     }
 
     private void displayData(String data) {
-
+        Intent intent = new Intent(this, displayHorse.class);
+        // TODO: get data from bluetooth and send to new class
+        // intent.putExtra();
+        startActivity(intent);
     }
 
     // we may not need this
