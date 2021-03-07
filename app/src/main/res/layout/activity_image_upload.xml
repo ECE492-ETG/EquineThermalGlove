@@ -4,11 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".displayHorse">
-
-    <com.github.mikephil.charting.charts.BarChart
-        android:id="@+id/barchart"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+    tools:context=".imageUpload">
 
 </androidx.constraintlayout.widget.ConstraintLayout>
