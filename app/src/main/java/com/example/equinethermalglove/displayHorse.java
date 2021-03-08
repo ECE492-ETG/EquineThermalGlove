@@ -6,9 +6,12 @@ import android.os.Bundle;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
@@ -16,36 +19,68 @@ import java.util.ArrayList;
 
 public class displayHorse extends AppCompatActivity {
 
-    ArrayList<Integer> testData = new ArrayList<>();
+    private static final int maxX = 5;
+    private static final int maxY = 70;
+    private static final int minY = 1;
+    private static final String SET_LABEL = "Test";
+    private static final String[] labels = {"first", "second", "third", "fourth", "fifth"};
+
+    BarChart barChart;
+
     // TODO: add logic for returning to database menu and deleting horse
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        testData.add(12); testData.add(62); testData.add(20); testData.add(42); testData.add(15);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_horse);
 
-        BarChart barChart = (BarChart) findViewById(R.id.barchart);
+        barChart = findViewById(R.id.barchart);
+        BarData data = createData();
+        appearance();
+        prepareData(data);
+    }
 
-        ArrayList<BarEntry> entries = new ArrayList<>();
-        entries.add(new BarEntry(testData.get(0), 0));
-        entries.add(new BarEntry(testData.get(1), 1));
-        entries.add(new BarEntry(testData.get(2), 2));
-        entries.add(new BarEntry(testData.get(3), 3));
-        entries.add(new BarEntry(testData.get(4), 4));
+    private BarData createData() {
+        ArrayList<BarEntry> values = new ArrayList<>();
+        int x, y;
+        int[] vals = {12, 42, 52, 21, 67};
+        for (int i = 0; i < maxX; i++) {
+            x = i;
+            y = vals[i];
+            values.add(new BarEntry(x, y));
+        }
 
-        BarDataSet bardataset = new BarDataSet(entries, "Cells");
+        BarDataSet set = new BarDataSet(values, SET_LABEL);;
 
-        ArrayList<String> labels = new ArrayList<String>();
-        labels.add("input1");
-        labels.add("input2");
-        labels.add("input3");
-        labels.add("input4");
-        labels.add("input5");
+        BarData data = new BarData(set);
 
-        BarData data = new BarData((IBarDataSet) labels, bardataset);
-        barChart.setData(data); // set the data and list of labels into chart
-        bardataset.setColors(ColorTemplate.COLORFUL_COLORS);
-        barChart.animateY(5000);
+        return data;
+    }
+
+    private void prepareData(BarData data) {
+        data.setValueTextSize(12f);
+        barChart.setData(data);
+        barChart.invalidate();
+    }
+
+    private void appearance() {
+        barChart.getDescription().setEnabled(false);
+        barChart.setDrawValueAboveBar(false);
+        XAxis x = barChart.getXAxis();
+        x.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                return labels[(int) value];
+            }
+        });
+
+        YAxis lAxis = barChart.getAxisLeft();
+        YAxis rAxis = barChart.getAxisRight();
+
+        lAxis.setGranularity(10f);
+        lAxis.setAxisMinimum(0);
+
+        rAxis.setGranularity(10f);
+        rAxis.setAxisMinimum(0);
     }
 
     public void returnToView() {
