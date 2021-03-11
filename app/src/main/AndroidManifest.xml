@@ -9,7 +9,6 @@
     <uses-feature
         android:name="android.hardware.bluetooth_le"
         android:required="true" />
-
     <uses-feature
         android:name="android.hardware.camera"
         android:required="true" />
@@ -21,8 +20,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".imageUpload"></activity>
-        <activity android:name=".displayHorse" />
+        <activity android:name=".displayExistingHorse"></activity>
+        <activity android:name=".displayNewHorse" />
         <activity android:name=".viewOldDataMain" />
         <activity android:name=".saveNewData" />
         <activity android:name=".bluetoothScan" />

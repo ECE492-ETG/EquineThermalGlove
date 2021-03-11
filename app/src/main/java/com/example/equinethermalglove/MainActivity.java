@@ -16,20 +16,15 @@ public class MainActivity extends AppCompatActivity {
 
         final Button btConn = findViewById(R.id.btConn);
         final Button viewExist = findViewById(R.id.viewExisting);
-        final Button imUp = findViewById(R.id.imUpload);
 
         btConn.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, displayHorse.class);
+            Intent intent = new Intent(MainActivity.this, displayNewHorse.class);
             startActivity(intent);
         });
 
         viewExist.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, viewOldDataMain.class);
-            startActivity(intent);
-        });
-
-        imUp.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, imageUpload.class);
+            // change back to viewOldDataMain.class when data starts being added to database
+            Intent intent = new Intent(MainActivity.this, displayExistingHorse.class);
             startActivity(intent);
         });
     }

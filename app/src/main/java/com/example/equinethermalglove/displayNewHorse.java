@@ -5,19 +5,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.ValueFormatter;
-import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
-import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
 
-public class displayHorse extends AppCompatActivity {
+public class displayNewHorse extends AppCompatActivity {
 
     private static final int maxX = 5;
     private static final int maxY = 70;
@@ -31,7 +28,7 @@ public class displayHorse extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_display_horse);
+        setContentView(R.layout.activity_display_new_horse);
 
         barChart = findViewById(R.id.barchart);
         BarData data = createData();
@@ -81,13 +78,5 @@ public class displayHorse extends AppCompatActivity {
 
         rAxis.setGranularity(10f);
         rAxis.setAxisMinimum(0);
-    }
-
-    public void returnToView() {
-
-    }
-
-    public void deleteHorse() {
-
     }
 }
