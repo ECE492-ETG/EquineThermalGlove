@@ -1,14 +1,11 @@
 package com.example.equinethermalglove;
 
-import android.bluetooth.BluetoothGattService;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
-
-import java.util.List;
 
 public class bluetoothReadIn extends AppCompatActivity {
 
@@ -60,7 +57,10 @@ public class bluetoothReadIn extends AppCompatActivity {
     }
 
     private void displayData(String data) {
-
+        Intent intent = new Intent(this, displayNewHorse.class);
+        // TODO: get data from bluetooth and send to new class
+        // intent.putExtra();
+        startActivity(intent);
     }
 
     // we may not need this

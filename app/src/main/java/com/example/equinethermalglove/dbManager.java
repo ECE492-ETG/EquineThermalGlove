@@ -14,23 +14,11 @@ public class dbManager {
 
     }
 
-    public void addImage(Image i) {
-
-    }
-
     public void deleteHorse(Horse h) {
 
     }
 
-    public void deleteImage(Image i) {
-
-    }
-
     public void updateHorse(Horse h) {
-
-    }
-
-    public void updateImage(Image i) {
 
     }
 }
