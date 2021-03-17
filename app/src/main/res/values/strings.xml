@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">EquineThermalGlove</string>
+    <string name="ble_not_supported">BLE is not supported on this device</string>
+    <string name="unknown_device">Unknown Device</string>
+    <string name="connected">Connected</string>
+    <string name="disconnected">Disconnected</string>
 </resources>
