@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
         final Button viewExist = findViewById(R.id.viewExisting);
 
         btConn.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, displayNewHorse.class);
+            Intent intent = new Intent(MainActivity.this, bluetoothScan.class);
             startActivity(intent);
         });
 
