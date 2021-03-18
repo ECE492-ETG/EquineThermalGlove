@@ -25,6 +25,7 @@
         <activity android:name=".viewOldDataMain" />
         <activity android:name=".saveNewData" />
         <activity android:name=".bluetoothScan" />
+        <activity android:name=".LoginActivity"/>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
