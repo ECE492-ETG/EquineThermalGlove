@@ -1,12 +1,17 @@
 package com.example.equinethermalglove;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 public class MainActivity extends AppCompatActivity {
+
+    private FirebaseAuth auth = FirebaseAuth.getInstance();
 
     // TODO: add buttons for connecting to database or starting bluetooth readin
     @Override
@@ -26,6 +31,17 @@ public class MainActivity extends AppCompatActivity {
             // change back to viewOldDataMain.class when data starts being added to database
             Intent intent = new Intent(MainActivity.this, displayExistingHorse.class);
             startActivity(intent);
+        });
+
+        // Redirect user to login page if no account logged in
+        auth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                if(firebaseAuth.getCurrentUser() == null) {
+                    Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                    startActivity(intent);
+                }
+            }
         });
     }
 }
