@@ -51,4 +51,5 @@ dependencies {
     // Nordic
     implementation 'no.nordicsemi.android.support.v18:scanner:1.4.3'
     implementation 'no.nordicsemi.android:dfu:1.9.1'
+    implementation 'com.google.firebase:firebase-auth:20.0.3'
 }
