@@ -10,6 +10,7 @@ import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -20,6 +21,8 @@ import java.util.UUID;
 public class bluetooth extends Service {
 
     private final static String TAG = bluetooth.class.getSimpleName();
+
+    private Binder binder = new LocalBinder();
 
     private BluetoothManager bluetoothManager;
     private BluetoothAdapter bluetoothAdapter;
@@ -150,6 +153,26 @@ public class bluetooth extends Service {
 
     }
 
+    // This gets called within the ServiceConnection from bluetoothReadIn
+    public boolean initialize() {
+        // If bluetoothManager is null, try to set it
+        if (bluetoothManager == null) {
+            bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+            if (bluetoothManager == null) {
+                Log.e(TAG, "Unable to initialize BluetoothManager.");
+                return false;
+            }
+        }
+        // For API level 18 and higher, get a reference to BluetoothAdapter through
+        // BluetoothManager.
+        bluetoothAdapter = bluetoothManager.getAdapter();
+        if (bluetoothAdapter == null) {
+            Log.e(TAG, "Unable to obtain a BluetoothAdapter.");
+            return false;
+        }
+        return true;
+    }
+
     boolean isBleSupported(Context context) {
         return BluetoothAdapter.getDefaultAdapter() != null
                 && context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE);
@@ -159,5 +182,11 @@ public class bluetooth extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    class LocalBinder extends Binder {
+        public bluetooth getService() {
+            return bluetooth.this;
+        }
     }
 }

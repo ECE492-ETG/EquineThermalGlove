@@ -1,13 +1,19 @@
 package com.example.equinethermalglove;
 
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 public class bluetoothReadIn extends AppCompatActivity {
+
+    private final static String TAG = bluetooth.class.getSimpleName();
 
     private bluetooth bluetooth;
     private boolean connected = false;
@@ -16,6 +22,9 @@ public class bluetoothReadIn extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth_read_in);
+
+        Intent gattServiceIntent = new Intent(this, bluetooth.class);
+        bindService(gattServiceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
     // Handles various events fired by the Service.
@@ -37,14 +46,34 @@ public class bluetoothReadIn extends AppCompatActivity {
                 updateConnectionState(R.string.disconnected);
                 invalidateOptionsMenu();
                 clearUI();
-            } else if (bluetooth.
-                    ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
+            } else if (bluetooth.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
                 // Show all the supported services and characteristics on the
                 // user interface.
 //                displayGattServices(bluetooth.getSupportedGattServices());
             } else if (bluetooth.ACTION_DATA_AVAILABLE.equals(action)) {
                 displayData(intent.getStringExtra(bluetooth.EXTRA_DATA));
             }
+        }
+    };
+
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            bluetooth = ((com.example.equinethermalglove.bluetooth.LocalBinder) service).getService();
+            if (bluetooth != null) {
+                if (!bluetooth.initialize()) {
+                    Log.e(TAG, "Unable to initialize Bluetooth");
+                    finish();
+                } else {
+                    // perform device connection
+                }
+                // call functions on service to check connection and connect to devices
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            bluetooth = null;
         }
     };
 

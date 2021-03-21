@@ -3,6 +3,7 @@ package com.example.equinethermalglove;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
@@ -12,6 +13,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -63,6 +66,15 @@ public class bluetoothScan extends AppCompatActivity {
 
         ListView bleDeviceList = findViewById(R.id.ble_device_list);
         bleDeviceList.setAdapter(leDeviceListAdapter);
+
+        bleDeviceList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // DEVICE SELECTED FROM LIST
+                BluetoothDevice bleDevice = (BluetoothDevice) parent.getItemAtPosition(position);
+                Toast.makeText(getApplicationContext(), "MAC: " + bleDevice.getAddress(), Toast.LENGTH_SHORT).show();
+            }
+        });
 
         scanLeDevice();
     }
