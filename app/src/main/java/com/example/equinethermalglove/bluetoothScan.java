@@ -12,6 +12,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.widget.Button;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.equinethermalglove.adapters.LeDeviceListAdapter;
@@ -30,7 +32,13 @@ public class bluetoothScan extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_bluetooth_read_in);
+        setContentView(R.layout.activity_bluetooth_scan);
+
+        final Button refreshScan = findViewById(R.id.refresh_scan_button);
+
+        refreshScan.setOnClickListener(v -> {
+            scanLeDevice();
+        });
 
         // Make sure BLE is supported on the device
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
@@ -52,6 +60,11 @@ public class bluetoothScan extends AppCompatActivity {
         bluetoothLeScanner = BluetoothAdapter.getDefaultAdapter().getBluetoothLeScanner();
         handler = new Handler();
         leDeviceListAdapter = new LeDeviceListAdapter(this.getLayoutInflater());
+
+        ListView bleDeviceList = findViewById(R.id.ble_device_list);
+        bleDeviceList.setAdapter(leDeviceListAdapter);
+
+        scanLeDevice();
     }
 
     private void scanLeDevice() {
