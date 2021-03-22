@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
         viewExist.setOnClickListener(v -> {
             // change back to viewOldDataMain.class when data starts being added to database
-            Intent intent = new Intent(MainActivity.this, displayExistingHorse.class);
+            Intent intent = new Intent(MainActivity.this, viewOldDataMain.class);
             startActivity(intent);
         });
     }
