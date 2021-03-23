@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Spinner;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -20,21 +21,35 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
+import static java.lang.Integer.parseInt;
 
 public class viewOldDataMain extends AppCompatActivity {
 
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     ArrayList<String> horseNames;
     ArrayAdapter<String> adapt;
+    Spinner limbs;
+    String userID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_old_data_main);
 
+        userID = "userID";
         final Button del = findViewById(R.id.delData);
         final Button viewData = findViewById(R.id.viewData);
         final ListView horses = findViewById(R.id.horseList);
+        limbs = findViewById(R.id.limbs);
+
+        String[] limbOptions = {"Front Left", "Front Right", "Back Left", "Back Right"};
+        ArrayAdapter<String> sAdapt = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, limbOptions);
+        limbs.setAdapter(sAdapt);
 
         horseNames = new ArrayList<>();
 
@@ -45,7 +60,7 @@ public class viewOldDataMain extends AppCompatActivity {
         viewData.setVisibility(Button.GONE);
 
         // get all horse names from firestore
-        db.collection("userID").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        db.collection(userID).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
 
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -71,7 +86,44 @@ public class viewOldDataMain extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(viewOldDataMain.this, displayExistingHorse.class);
-                    // TODO: get data for selected horse and send to new activity
+                    String limb;
+                    if (limbs.getSelectedItem() == "Front Right") {
+                        limb = "frontRight";
+                    } else if(limbs.getSelectedItem() == "Front Left") {
+                        limb = "frontLeft";
+                    } else if (limbs.getSelectedItem() == "Back Left") {
+                        limb = "backLeft";
+                    } else if (limbs.getSelectedItem() == "Back Right") {
+                        limb = "backRight";
+                    } else {
+                        limb = "";
+                    }
+                    HashMap<String, Integer> data = new HashMap<>();
+                    data.put(horseNames.get(selected), 0);
+                        db.collection(userID).document(horseNames.get(selected)).collection(limb).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    for (QueryDocumentSnapshot document : task.getResult()) {
+                                        String temp = document.get("temp").toString();
+                                        temp = temp.replaceAll(",", "");
+                                        temp = temp.replaceAll("\\[", "");
+                                        temp = temp.replaceAll("]", "");
+                                        ArrayList<String> dt = new ArrayList<>();
+                                        dt.addAll(Arrays.asList(temp.split(" ")));
+                                        int avg = 0;
+                                        for (int i = 0; i < dt.size(); i++) {
+                                            avg += parseInt(dt.get(i));
+                                        }
+                                        avg = avg / dt.size();
+                                        data.put(document.getId(), avg);
+                                    }
+                                } else {
+                                    Log.d("horse data date", "could not read aata");
+                                }
+                            }
+                        });
+                    intent.putExtra("data", data);
                     startActivity(intent);
                 }
             });
