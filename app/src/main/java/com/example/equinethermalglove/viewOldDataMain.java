@@ -35,6 +35,7 @@ public class viewOldDataMain extends AppCompatActivity {
     ArrayAdapter<String> adapt;
     Spinner limbs;
     String userID;
+    HashMap<String, Integer> data = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,33 +99,36 @@ public class viewOldDataMain extends AppCompatActivity {
                     } else {
                         limb = "";
                     }
-                    HashMap<String, Integer> data = new HashMap<>();
                     data.put(horseNames.get(selected), 0);
-                        db.collection(userID).document(horseNames.get(selected)).collection(limb).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                if (task.isSuccessful()) {
-                                    for (QueryDocumentSnapshot document : task.getResult()) {
-                                        String temp = document.get("temp").toString();
-                                        temp = temp.replaceAll(",", "");
-                                        temp = temp.replaceAll("\\[", "");
-                                        temp = temp.replaceAll("]", "");
-                                        ArrayList<String> dt = new ArrayList<>();
-                                        dt.addAll(Arrays.asList(temp.split(" ")));
-                                        int avg = 0;
-                                        for (int i = 0; i < dt.size(); i++) {
-                                            avg += parseInt(dt.get(i));
-                                        }
-                                        avg = avg / dt.size();
-                                        data.put(document.getId(), avg);
+                    db.collection(userID).document(horseNames.get(selected)).collection(limb).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    String temp = document.get("temp").toString();
+                                    temp = temp.replaceAll(",", "");
+                                    temp = temp.replaceAll("\\[", "");
+                                    temp = temp.replaceAll("]", "");
+                                    ArrayList<String> dt = new ArrayList<>();
+                                    dt.addAll(Arrays.asList(temp.split(" ")));
+                                    int avg = 0;
+                                    for (int i = 0; i < dt.size(); i++) {
+                                        avg += parseInt(dt.get(i));
                                     }
-                                } else {
-                                    Log.d("horse data date", "could not read aata");
+                                    avg = avg / dt.size();
+                                    Log.d("data to be added", document.getId() + " -> " + avg);
+                                    data.put(document.getId(), avg);
                                 }
+                            } else {
+                                Log.d("horse data date", "could not read aata");
                             }
-                        });
-                    intent.putExtra("data", data);
-                    startActivity(intent);
+                            intent.putExtra("data", data);
+                            for (Map.Entry<String, Integer> e : data.entrySet()) {
+                                Log.d("data", e.getKey() + " -> " + e.getValue());
+                            }
+                            startActivity(intent);
+                        }
+                    });
                 }
             });
 
