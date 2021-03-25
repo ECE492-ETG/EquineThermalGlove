@@ -4,4 +4,9 @@
     <string name="unknown_device">Unknown Device</string>
     <string name="connected">Connected</string>
     <string name="disconnected">Disconnected</string>
+    <string name="etg_login_title">ETG Login/Register</string>
+    <string name="enter_email">Enter Email</string>
+    <string name="enter_password">Enter Password</string>
+    <string name="sign_in">Sign In</string>
+    <string name="register">Register</string>
 </resources>
