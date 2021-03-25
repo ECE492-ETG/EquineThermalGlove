@@ -18,6 +18,7 @@ import com.github.mikephil.charting.formatter.ValueFormatter;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -93,6 +94,8 @@ public class displayExistingHorse extends AppCompatActivity {
             y.add(e.getValue());
             j++;
         }
+        Collections.reverse(labels);
+        Collections.reverse(y);
         for (int i = 0; i < maxX; i++) {
             x = i;
             values.add(new BarEntry(x, y.get(i)));
