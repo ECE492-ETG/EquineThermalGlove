@@ -15,6 +15,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthEmailException;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 
 import java.util.regex.Pattern;
 
@@ -49,7 +52,7 @@ public class LoginActivity extends AppCompatActivity {
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO
+                attemptRegistration();
             }
         });
 
@@ -114,5 +117,45 @@ public class LoginActivity extends AppCompatActivity {
 
         emailField.setError(null);
         return true;
+    }
+
+    private void attemptRegistration() {
+        if (emailIsValid() & passwordIsValid()) {
+            createAccount();
+        } else {
+            return;
+        }
+    }
+
+    private void createAccount() {
+
+        final String email = emailField.getText().toString().trim().toLowerCase();
+        String password = passwordField.getText().toString().trim();
+
+        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if(task.isSuccessful()) {
+                    Toast.makeText(LoginActivity.this, "You're Signed Up", Toast.LENGTH_SHORT).show();
+                } else {
+
+                    try {
+                        throw task.getException();
+                    }
+                    catch (FirebaseAuthEmailException e) {
+                        Toast.makeText(LoginActivity.this, "Invalid Email", Toast.LENGTH_SHORT).show();
+                    }
+                    catch (FirebaseAuthWeakPasswordException e) {
+                        Toast.makeText(LoginActivity.this, "Invalid Password", Toast.LENGTH_SHORT).show();
+                    }
+                    catch (FirebaseAuthUserCollisionException e) {
+                        Toast.makeText(LoginActivity.this, "Email already in use.", Toast.LENGTH_SHORT).show();
+                    }
+                    catch (Exception e) {
+                        Log.e("EXCEPTION THROWN: ", e.toString());
+                    }
+                }
+            }
+        });
     }
 }
