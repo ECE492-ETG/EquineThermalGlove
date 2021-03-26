@@ -4,13 +4,10 @@
     <string name="unknown_device">Unknown Device</string>
     <string name="connected">Connected</string>
     <string name="disconnected">Disconnected</string>
-<<<<<<< HEAD
     <string name="refresh_scan">Refresh Scan</string>
-=======
     <string name="etg_login_title">ETG Login/Register</string>
     <string name="enter_email">Enter Email</string>
     <string name="enter_password">Enter Password</string>
     <string name="sign_in">Sign In</string>
     <string name="register">Register</string>
->>>>>>> ed030c0b3ed1e8045d66dc1027afa555258ed8ca
 </resources>
