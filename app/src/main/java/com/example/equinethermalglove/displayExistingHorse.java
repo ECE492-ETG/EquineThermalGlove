@@ -37,7 +37,7 @@ public class displayExistingHorse extends AppCompatActivity {
 
     BarChart barChart;
     HashMap<String, Integer> dt;
-    private static Button rtn;
+    private Button rtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
