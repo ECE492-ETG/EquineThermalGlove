@@ -2,7 +2,9 @@ package com.example.equinethermalglove;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.XAxis;
@@ -24,6 +26,8 @@ public class displayNewHorse extends AppCompatActivity {
 
     BarChart barChart;
     ArrayList<Integer> dt;
+    private Button rtn;
+    private Button save;
 
     // TODO: add logic for returning to database menu and deleting horse
     @Override
@@ -31,6 +35,14 @@ public class displayNewHorse extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_new_horse);
 
+        rtn.setOnClickListener(v -> {
+            Intent intent = new Intent(displayNewHorse.this, MainActivity.class);
+            startActivity(intent);
+        });
+
+        save.setOnClickListener(v -> {
+            //TODO: add functionality to save data to firebase database
+        });
         // get the data from bluetooth scan for display
         //dt = getIntent().getSerializableExtra("data");
         barChart = findViewById(R.id.barchart);
