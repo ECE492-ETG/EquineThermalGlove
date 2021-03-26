@@ -3,6 +3,7 @@ package com.example.equinethermalglove;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.widget.Button;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
@@ -36,12 +37,14 @@ public class displayExistingHorse extends AppCompatActivity {
 
     BarChart barChart;
     HashMap<String, Integer> dt;
+    private static Button rtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_existing_horse);
 
+        rtn = findViewById(R.id.return_btn);
         dt = (HashMap<String, Integer>) getIntent().getSerializableExtra("data");
         maxX = dt.size() - 1;
         for (Map.Entry<String, Integer> e : dt.entrySet()) {
@@ -54,6 +57,10 @@ public class displayExistingHorse extends AppCompatActivity {
         BarData data = createData();
         appearance();
         prepareData(data);
+
+        rtn.setOnClickListener(v -> {
+            finish();
+        });
     }
 
     public void appearance() {

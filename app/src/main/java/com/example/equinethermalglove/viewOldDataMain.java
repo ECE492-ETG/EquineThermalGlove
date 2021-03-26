@@ -126,7 +126,7 @@ public class viewOldDataMain extends AppCompatActivity {
                             for (Map.Entry<String, Integer> e : data.entrySet()) {
                                 Log.d("data", e.getKey() + " -> " + e.getValue());
                             }
-                            startActivity(intent);
+                            startActivityForResult(intent, 0);
                         }
                     });
                 }
@@ -141,7 +141,10 @@ public class viewOldDataMain extends AppCompatActivity {
                 }
             });
         });
+    }
 
-
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent horse) {
+        super.onActivityResult(requestCode, resultCode, horse);
     }
 }
