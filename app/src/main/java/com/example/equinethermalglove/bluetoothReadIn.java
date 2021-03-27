@@ -4,10 +4,12 @@ import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -15,13 +17,22 @@ public class bluetoothReadIn extends AppCompatActivity {
 
     private final static String TAG = bluetooth.class.getSimpleName();
 
+    public static final String EXTRAS_DEVICE_NAME = "DEVICE_NAME";
+    public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
+
     private bluetooth bluetooth;
+    private String deviceName;
+    private String deviceAddress;
     private boolean connected = false;
 
     // TODO: use bluetooth class to read in data and send it to saveNewData activity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth_read_in);
+
+        final Intent intent = getIntent();
+        deviceName = intent.getStringExtra(EXTRAS_DEVICE_NAME);
+        deviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
 
         Intent gattServiceIntent = new Intent(this, bluetooth.class);
         bindService(gattServiceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
@@ -39,11 +50,11 @@ public class bluetoothReadIn extends AppCompatActivity {
             final String action = intent.getAction();
             if (bluetooth.ACTION_GATT_CONNECTED.equals(action)) {
                 connected = true;
-                updateConnectionState(R.string.connected);
+                updateConnectionState("Connected");
                 invalidateOptionsMenu();
             } else if (bluetooth.ACTION_GATT_DISCONNECTED.equals(action)) {
                 connected = false;
-                updateConnectionState(R.string.disconnected);
+                updateConnectionState("Disconnected");
                 invalidateOptionsMenu();
                 clearUI();
             } else if (bluetooth.ACTION_GATT_SERVICES_DISCOVERED.equals(action)) {
@@ -60,25 +71,54 @@ public class bluetoothReadIn extends AppCompatActivity {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             bluetooth = ((com.example.equinethermalglove.bluetooth.LocalBinder) service).getService();
-            if (bluetooth != null) {
-                if (!bluetooth.initialize()) {
-                    Log.e(TAG, "Unable to initialize Bluetooth");
-                    finish();
-                } else {
-                    // perform device connection
-                }
-                // call functions on service to check connection and connect to devices
+            if (!bluetooth.initialize()) {
+                Log.e(TAG, "Unable to initialize Bluetooth");
+                finish();
             }
+            // Automatically connects to the device upon successful start-up initialization.
+            bluetooth.connect(deviceAddress);
         }
 
         @Override
-        public void onServiceDisconnected(ComponentName name) {
+        public void onServiceDisconnected(ComponentName componentName) {
             bluetooth = null;
         }
     };
 
-    private void updateConnectionState(final int resourceId) {
+    private void updateConnectionState(String connectionState) {
+        Toast.makeText(getApplicationContext(), connectionState, Toast.LENGTH_SHORT).show();
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(gattUpdateReceiver, makeGattUpdateIntentFilter());
+        if (bluetooth!= null) {
+            final boolean result = bluetooth.connect(deviceAddress);
+            Log.d(TAG, "Connect request result=" + result);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(gattUpdateReceiver);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unbindService(serviceConnection);
+        bluetooth = null;
+    }
+
+    private static IntentFilter makeGattUpdateIntentFilter() {
+        final IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(com.example.equinethermalglove.bluetooth.ACTION_GATT_CONNECTED);
+        intentFilter.addAction(com.example.equinethermalglove.bluetooth.ACTION_GATT_DISCONNECTED);
+        intentFilter.addAction(com.example.equinethermalglove.bluetooth.ACTION_GATT_SERVICES_DISCOVERED);
+        intentFilter.addAction(com.example.equinethermalglove.bluetooth.ACTION_DATA_AVAILABLE);
+        return intentFilter;
     }
 
     private void clearUI() {

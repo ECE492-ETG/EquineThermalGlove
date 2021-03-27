@@ -72,7 +72,15 @@ public class bluetoothScan extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // DEVICE SELECTED FROM LIST
                 BluetoothDevice bleDevice = (BluetoothDevice) parent.getItemAtPosition(position);
-                Toast.makeText(getApplicationContext(), "MAC: " + bleDevice.getAddress(), Toast.LENGTH_SHORT).show();
+                if (bleDevice == null) return;
+                final Intent intent = new Intent(bluetoothScan.this, bluetoothReadIn.class);
+                intent.putExtra(bluetoothReadIn.EXTRAS_DEVICE_NAME, bleDevice.getName());
+                intent.putExtra(bluetoothReadIn.EXTRAS_DEVICE_ADDRESS, bleDevice.getAddress());
+                if (mScanning) {
+                    bluetoothLeScanner.stopScan(leScanCallback);
+                    mScanning = false;
+                }
+                startActivity(intent);
             }
         });
 

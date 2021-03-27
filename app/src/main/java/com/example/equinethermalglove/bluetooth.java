@@ -2,9 +2,12 @@ package com.example.equinethermalglove;
 
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattDescriptor;
+import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
@@ -16,6 +19,7 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import java.util.List;
 import java.util.UUID;
 
 public class bluetooth extends Service {
@@ -91,6 +95,12 @@ public class bluetooth extends Service {
                         broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
                     }
                 }
+
+                @Override
+                public void onCharacteristicChanged(BluetoothGatt gatt,
+                                                    BluetoothGattCharacteristic characteristic) {
+                    broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
+                }
             };
 
     private void broadcastUpdate(final String action) {
@@ -132,25 +142,62 @@ public class bluetooth extends Service {
         sendBroadcast(intent);
     }
 
+    /**
+     * Request a read on a given {@code BluetoothGattCharacteristic}. The read result is reported
+     * asynchronously through the {@code BluetoothGattCallback#onCharacteristicRead(android.bluetooth.BluetoothGatt, android.bluetooth.BluetoothGattCharacteristic, int)}
+     * callback.
+     *
+     * @param characteristic The characteristic to read from.
+     */
+    public void readCharacteristic(BluetoothGattCharacteristic characteristic) {
+        if (bluetoothAdapter == null || bluetoothGatt == null) {
+            Log.w(TAG, "BluetoothAdapter not initialized");
+            return;
+        }
+        bluetoothGatt.readCharacteristic(characteristic);
+    }
+
+    /**
+     * Enables or disables notification on a give characteristic.
+     *
+     * @param characteristic Characteristic to act on.
+     * @param enabled If true, enable notification.  False otherwise.
+     */
+    public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic,
+                                              boolean enabled) {
+        if (bluetoothAdapter == null || bluetoothGatt == null) {
+            Log.w(TAG, "BluetoothAdapter not initialized");
+            return;
+        }
+        bluetoothGatt.setCharacteristicNotification(characteristic, enabled);
+
+        // This is specific to ETG
+        if (UUID_ETG.equals(characteristic.getUuid())) {
+            BluetoothGattDescriptor descriptor = characteristic.getDescriptor(
+                    UUID.fromString(characteristic.getUuid().toString()));
+            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+            bluetoothGatt.writeDescriptor(descriptor);
+        }
+    }
+
+    /**
+     * Retrieves a list of supported GATT services on the connected device. This should be
+     * invoked only after {@code BluetoothGatt#discoverServices()} completes successfully.
+     *
+     * @return A {@code List} of supported services.
+     */
+    public List<BluetoothGattService> getSupportedGattServices() {
+        if (bluetoothGatt == null) return null;
+
+        return bluetoothGatt.getServices();
+    }
+
     public void close() {
         if (bluetoothGatt == null) {
             return;
         }
         bluetoothGatt.close();
         bluetoothGatt = null;
-    }
-
-    // TODO: add logic for bluetooth connections
-    public void newConn() {
-
-    }
-
-    public void readIn() {
-
-    }
-
-    public void terminateConn() {
-
     }
 
     // This gets called within the ServiceConnection from bluetoothReadIn
@@ -173,15 +220,68 @@ public class bluetooth extends Service {
         return true;
     }
 
+    public boolean connect(final String address) {
+        if (bluetoothAdapter == null || address == null) {
+            Log.w(TAG, "BluetoothAdapter not initialized or unspecified address.");
+            return false;
+        }
+
+        // Previously connected device.  Try to reconnect.
+        if (bluetoothDeviceAddress != null && address.equals(bluetoothDeviceAddress)
+                && bluetoothGatt != null) {
+            Log.d(TAG, "Trying to use an existing mBluetoothGatt for connection.");
+            if (bluetoothGatt.connect()) {
+                connectionState = STATE_CONNECTING;
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        final BluetoothDevice device = bluetoothAdapter.getRemoteDevice(address);
+        if (device == null) {
+            Log.w(TAG, "Device not found.  Unable to connect.");
+            return false;
+        }
+        // We want to directly connect to the device, so we are setting the autoConnect
+        // parameter to false.
+        bluetoothGatt = device.connectGatt(this, false, gattCallback);
+        Log.d(TAG, "Trying to create a new connection.");
+        bluetoothDeviceAddress = address;
+        connectionState = STATE_CONNECTING;
+        return true;
+    }
+
+    /**
+     * Disconnects an existing connection or cancel a pending connection. The disconnection result
+     * is reported asynchronously through the
+     * {@code BluetoothGattCallback#onConnectionStateChange(android.bluetooth.BluetoothGatt, int, int)}
+     * callback.
+     */
+    public void disconnect() {
+        if (bluetoothAdapter == null || bluetoothGatt == null) {
+            Log.w(TAG, "BluetoothAdapter not initialized");
+            return;
+        }
+        bluetoothGatt.disconnect();
+    }
+
     boolean isBleSupported(Context context) {
         return BluetoothAdapter.getDefaultAdapter() != null
                 && context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE);
     }
 
-    @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return binder;
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        // After using a given device, you should make sure that BluetoothGatt.close() is called
+        // such that resources are cleaned up properly.
+        close();
+        return super.onUnbind(intent);
     }
 
     class LocalBinder extends Binder {
