@@ -144,12 +144,15 @@ public class viewOldDataMain extends AppCompatActivity {
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
                                 Log.d("delete", "Data deleted");
+                                horseNames.remove(horseNames.get(selected));
+                                adapt.notifyDataSetChanged();
+                                del.setVisibility(Button.GONE);
+                                viewData.setVisibility(Button.GONE);
                             } else {
                                 Log.d("delete", "data not deleted");
                             }
                         }
                     });
-                    adapt.notifyDataSetChanged();
                 }
             });
         });
