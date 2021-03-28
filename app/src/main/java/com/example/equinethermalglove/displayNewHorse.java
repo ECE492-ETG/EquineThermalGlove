@@ -61,6 +61,8 @@ public class displayNewHorse extends AppCompatActivity {
         ArrayAdapter<String> sAdapt = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, limbOptions);
         limb.setAdapter(sAdapt);
 
+        rtn.setVisibility(Button.GONE);
+
         rtn.setOnClickListener(v -> {
             Intent intent = new Intent(displayNewHorse.this, MainActivity.class);
             startActivity(intent);
@@ -82,6 +84,8 @@ public class displayNewHorse extends AppCompatActivity {
                 l = "";
             }
             writeToDb(h, l);
+            save.setVisibility(Button.GONE);
+            rtn.setVisibility(Button.VISIBLE);
         });
         // get the data from bluetooth scan for display
         //dt = getIntent().getSerializableExtra("data");
