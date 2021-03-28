@@ -42,7 +42,7 @@ public class viewOldDataMain extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_old_data_main);
 
-        userID = "userID";
+        userID = "test";
         final Button del = findViewById(R.id.delData);
         final Button viewData = findViewById(R.id.viewData);
         final ListView horses = findViewById(R.id.horseList);
@@ -138,6 +138,18 @@ public class viewOldDataMain extends AppCompatActivity {
                 public void onClick(View view) {
                     // TODO: delete horse data from database
                     // optional ask in fragment before delete.
+
+                    db.collection(userID).document(horseNames.get(selected)).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Log.d("delete", "Data deleted");
+                            } else {
+                                Log.d("delete", "data not deleted");
+                            }
+                        }
+                    });
+                    adapt.notifyDataSetChanged();
                 }
             });
         });
