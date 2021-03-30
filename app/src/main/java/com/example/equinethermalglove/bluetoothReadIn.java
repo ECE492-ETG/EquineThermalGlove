@@ -1,6 +1,7 @@
 package com.example.equinethermalglove;
 
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattService;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -14,6 +15,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.List;
 
 public class bluetoothReadIn extends AppCompatActivity {
 
@@ -90,6 +93,7 @@ public class bluetoothReadIn extends AppCompatActivity {
                 // Show all the supported services and characteristics on the
                 // user interface.
 //                displayGattServices(bluetooth.getSupportedGattServices());
+                readTemperature();
             } else if (bluetooth.ACTION_DATA_AVAILABLE.equals(action)) {
                 displayData(intent.getStringExtra(bluetooth.EXTRA_DATA));
             }
@@ -141,5 +145,22 @@ public class bluetoothReadIn extends AppCompatActivity {
         if (data != null) {
             tempVal.setText(data);
         }
+    }
+
+    private void readTemperature() {
+        BluetoothGattCharacteristic temp = null;
+        List<BluetoothGattService> services = btService.getSupportedGattServices();
+        for (int i = 0; i < services.size(); i++) {
+            BluetoothGattService gattService = services.get(i);
+            if (gattService.getUuid().toString().equalsIgnoreCase(btService.UUID_ETG_Service.toString())) {
+                temp = gattService.getCharacteristic(btService.UUID_ETG_Temperature);
+            }
+        }
+        if (temp == null) {
+            Log.e(TAG, "UUID_ETG_Service not found.");
+            return;
+        }
+        btService.readCharacteristic(temp);
+        btService.setCharacteristicNotification(temp, true);
     }
 }

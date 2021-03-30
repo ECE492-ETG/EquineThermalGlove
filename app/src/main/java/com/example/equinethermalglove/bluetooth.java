@@ -19,6 +19,7 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.UUID;
 
@@ -114,22 +115,15 @@ public class bluetooth extends Service {
                                  final BluetoothGattCharacteristic characteristic) {
         final Intent intent = new Intent(action);
 
-        // This is special handling for the Heart Rate Measurement profile. Data
-        // parsing is carried out as per profile specifications.
+        // This is special handling for the ETG Temperature Measurement
         if (UUID_ETG_Temperature.equals(characteristic.getUuid())) {
-            // TODO fill out the format for passing ETG info
-            int flag = characteristic.getProperties();
-            int format = -1;
-            if ((flag & 0x01) != 0) {
-                format = BluetoothGattCharacteristic.FORMAT_UINT16;
-                Log.d(TAG, "Temperature format UINT16.");
-            } else {
-                format = BluetoothGattCharacteristic.FORMAT_UINT8;
-                Log.d(TAG, "Temperature format UINT8.");
-            }
-            final int temperature = characteristic.getIntValue(format, 1);
+
+            // TODO: May need to change this if we change the data-type passed
+            final byte[] data = characteristic.getValue();
+            int temperature = data[0] & 0xff;
             Log.d(TAG, String.format("Received temperature: %d", temperature));
             intent.putExtra(EXTRA_DATA, String.valueOf(temperature));
+
         } else {
             // For all other profiles, writes the data formatted in HEX.
             final byte[] data = characteristic.getValue();
@@ -176,7 +170,7 @@ public class bluetooth extends Service {
         // This is specific to ETG
         if (UUID_ETG_Temperature.equals(characteristic.getUuid())) {
             BluetoothGattDescriptor descriptor = characteristic.getDescriptor(
-                    UUID.fromString(characteristic.getUuid().toString()));
+                    UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")); //tbh I'm not sure why the descriptor is this UUID
             descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
             bluetoothGatt.writeDescriptor(descriptor);
         }
