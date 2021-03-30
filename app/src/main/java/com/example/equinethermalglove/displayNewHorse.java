@@ -1,5 +1,6 @@
 package com.example.equinethermalglove;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -17,7 +18,11 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.ValueFormatter;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -137,34 +142,27 @@ public class displayNewHorse extends AppCompatActivity {
         user.put("value", 1);
         HashMap<String, Object> data = new HashMap<>();
         data.put("temp", dt);
-
-        dbManager.getdB().collection(userID).document(horseName).set(user).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                Log.d("data added", "Data added to database");
-            } else {
-                Log.d("data added", "data not added to database");
-            }
-        });
-
         Calendar curDate = Calendar.getInstance();
         String date = curDate.get(Calendar.DAY_OF_MONTH) + "-" + (curDate.get(Calendar.MONTH) + 1) + "-" + curDate.get(Calendar.YEAR);
-        String[] limbs = {"frontLeft", "frontRight", "backLeft", "backRight"};
-        HashMap<String, Object> empty = new HashMap<>();
-        ArrayList<Integer> emptyData = new ArrayList<>();
-        emptyData.add(0); emptyData.add(0); emptyData.add(0); emptyData.add(0); emptyData.add(0);
-        empty.put("temp", emptyData);
 
-        for (int i = 0; i < 4; i++) {
-            if (limb.equals(limbs[i])) {
-                dbManager.getdB().collection(userID).document(horseName).collection(limb).document(date).set(data).addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        Log.d("data added", "Data added to database");
-                    } else {
-                        Log.d("data added", "data not added to database");
-                    }
-                });
-            } else {
-                dbManager.getdB().collection(userID).document(horseName).collection(limbs[i]).document(date).set(empty).addOnCompleteListener(task -> {
+        if (!horseExists(horseName)) {
+            Log.d("horse exists", "false");
+            ArrayList<Integer> emptyData = new ArrayList<>();
+            HashMap<String, Object> empty = new HashMap<>();
+            emptyData.add(0); emptyData.add(0); emptyData.add(0); emptyData.add(0); emptyData.add(0);
+            empty.put("temp", emptyData);
+            String[] limbs = {"frontLeft", "frontRight", "backLeft", "backRight"};
+
+            dbManager.getdB().collection(userID).document(horseName).set(user).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    Log.d("data added", "Data added to database");
+                } else {
+                    Log.d("data added", "data not added to database");
+                }
+            });
+
+            for (int i = 0; i < 4; i++) {
+                dbManager.getdB().collection(userID).document(horseName).collection(limbs[i]).document("init").set(empty).addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Log.d("data added", "Data added to database");
                     } else {
@@ -173,5 +171,31 @@ public class displayNewHorse extends AppCompatActivity {
                 });
             }
         }
+
+        dbManager.getdB().collection(userID).document(horseName).collection(limb).document(date).set(data).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    Log.d("data added", "success");
+                } else {
+                    Log.d("data added", "failure");
+                }
+            }
+        });
+    }
+
+    private boolean horseExists(String horse) {
+        final boolean[] isHorse = new boolean[1];
+        dbManager.getdB().collection(userID).document(horse).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot doc = task.getResult();
+                    isHorse[0] = doc.exists();
+                }
+            }
+        });
+        Log.d("isHorse", String.valueOf(isHorse[0]));
+        return isHorse[0];
     }
 }

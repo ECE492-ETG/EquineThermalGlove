@@ -127,9 +127,6 @@ public class viewOldDataMain extends AppCompatActivity {
                                 Log.d("horse data date", "could not read aata");
                             }
                             intent.putExtra("data", data);
-                            for (Map.Entry<String, Integer> e : data.entrySet()) {
-                                Log.d("data", e.getKey() + " -> " + e.getValue());
-                            }
                             startActivityForResult(intent, 0);
                         }
                     });

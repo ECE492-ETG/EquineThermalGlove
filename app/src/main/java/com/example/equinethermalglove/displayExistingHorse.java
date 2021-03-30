@@ -3,6 +3,7 @@ package com.example.equinethermalglove;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 
 import com.github.mikephil.charting.charts.BarChart;
@@ -22,6 +23,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
@@ -47,12 +49,17 @@ public class displayExistingHorse extends AppCompatActivity {
         rtn = findViewById(R.id.return_btn);
         dt = (HashMap<String, Integer>) getIntent().getSerializableExtra("data");
         maxX = dt.size() - 1;
+        Log.d("Check", "about to find horseName");
+        String removed = "";
         for (Map.Entry<String, Integer> e : dt.entrySet()) {
+            Log.d("data", e.getKey() + " " + String.valueOf(e.getValue()));
             if (Objects.equals(-1, e.getValue())) {
                 SET_LABEL = e.getKey();
-                dt.remove(e.getKey());
+                removed = e.getKey();
+                Log.d("removed", "Value removed: " + e.getKey());
             }
         }
+        dt.remove(removed);
         barChart = findViewById(R.id.barchart);
         BarData data = createData();
         appearance();
