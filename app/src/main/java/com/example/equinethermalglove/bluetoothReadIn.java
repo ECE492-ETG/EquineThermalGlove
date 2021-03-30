@@ -17,7 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class bluetoothReadIn extends AppCompatActivity {
 
-    private final static String TAG = bluetooth.class.getSimpleName();
+    private final static String TAG = bluetoothReadIn.class.getSimpleName();
 
     public static final String EXTRAS_DEVICE_NAME = "DEVICE_NAME";
     public static final String EXTRAS_DEVICE_ADDRESS = "DEVICE_ADDRESS";
@@ -65,8 +65,9 @@ public class bluetoothReadIn extends AppCompatActivity {
         connectionState = findViewById(R.id.connection_state);
 
         Intent gattServiceIntent = new Intent(this, bluetooth.class);
-        startService(gattServiceIntent);
-        bindService(gattServiceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+        if (!bindService(gattServiceIntent, serviceConnection, Context.BIND_AUTO_CREATE)) {
+            Log.e(TAG, "Bluetooth service failed to bind.");
+        }
     }
 
     // Handles various events fired by the Service.
