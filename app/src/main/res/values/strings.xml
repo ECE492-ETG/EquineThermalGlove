@@ -10,4 +10,6 @@
     <string name="enter_password">Enter Password</string>
     <string name="sign_in">Sign In</string>
     <string name="register">Register</string>
+    <string name="temperature">Temperature:</string>
+    <string name="connection_state_label">Connection State:</string>
 </resources>

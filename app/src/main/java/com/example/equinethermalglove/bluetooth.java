@@ -26,8 +26,6 @@ public class bluetooth extends Service {
 
     private final static String TAG = bluetooth.class.getSimpleName();
 
-    private Binder binder = new LocalBinder();
-
     private BluetoothManager bluetoothManager;
     private BluetoothAdapter bluetoothAdapter;
     private String bluetoothDeviceAddress;
@@ -50,8 +48,12 @@ public class bluetooth extends Service {
             "com.example.bluetooth.le.EXTRA_DATA";
 
     // ETG UUID
-    public final static UUID UUID_ETG =
-            UUID.fromString("0");
+    public final static UUID UUID_ETG_Service =
+            UUID.fromString("089915a8-1528-437a-b378-f731190c0745");
+    public final static UUID UUID_ETG_Temperature =
+            UUID.fromString("08990001-1528-437a-b378-f731190c0745");
+    public final static UUID UUID_ETG_Battery =
+            UUID.fromString("08990002-1528-437a-b378-f731190c0745");
 
     // Various callback methods defined by the BLE API.
     private final BluetoothGattCallback gattCallback =
@@ -114,20 +116,20 @@ public class bluetooth extends Service {
 
         // This is special handling for the Heart Rate Measurement profile. Data
         // parsing is carried out as per profile specifications.
-        if (UUID_ETG.equals(characteristic.getUuid())) {
+        if (UUID_ETG_Temperature.equals(characteristic.getUuid())) {
             // TODO fill out the format for passing ETG info
-//            int flag = characteristic.getProperties();
-//            int format = -1;
-//            if ((flag & 0x01) != 0) {
-//                format = BluetoothGattCharacteristic.FORMAT_UINT16;
-//                Log.d(TAG, "Heart rate format UINT16.");
-//            } else {
-//                format = BluetoothGattCharacteristic.FORMAT_UINT8;
-//                Log.d(TAG, "Heart rate format UINT8.");
-//            }
-//            final int heartRate = characteristic.getIntValue(format, 1);
-//            Log.d(TAG, String.format("Received heart rate: %d", heartRate));
-//            intent.putExtra(EXTRA_DATA, String.valueOf(heartRate));
+            int flag = characteristic.getProperties();
+            int format = -1;
+            if ((flag & 0x01) != 0) {
+                format = BluetoothGattCharacteristic.FORMAT_UINT16;
+                Log.d(TAG, "Temperature format UINT16.");
+            } else {
+                format = BluetoothGattCharacteristic.FORMAT_UINT8;
+                Log.d(TAG, "Temperature format UINT8.");
+            }
+            final int temperature = characteristic.getIntValue(format, 1);
+            Log.d(TAG, String.format("Received temperature: %d", temperature));
+            intent.putExtra(EXTRA_DATA, String.valueOf(temperature));
         } else {
             // For all other profiles, writes the data formatted in HEX.
             final byte[] data = characteristic.getValue();
@@ -172,7 +174,7 @@ public class bluetooth extends Service {
         bluetoothGatt.setCharacteristicNotification(characteristic, enabled);
 
         // This is specific to ETG
-        if (UUID_ETG.equals(characteristic.getUuid())) {
+        if (UUID_ETG_Temperature.equals(characteristic.getUuid())) {
             BluetoothGattDescriptor descriptor = characteristic.getDescriptor(
                     UUID.fromString(characteristic.getUuid().toString()));
             descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
@@ -285,8 +287,10 @@ public class bluetooth extends Service {
     }
 
     class LocalBinder extends Binder {
-        public bluetooth getService() {
+        bluetooth getService() {
             return bluetooth.this;
         }
     }
+
+    private final IBinder binder = new LocalBinder();
 }

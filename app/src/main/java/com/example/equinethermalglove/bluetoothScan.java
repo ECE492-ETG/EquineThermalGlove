@@ -60,7 +60,7 @@ public class bluetoothScan extends AppCompatActivity {
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }
 
-        bluetoothLeScanner = BluetoothAdapter.getDefaultAdapter().getBluetoothLeScanner();
+        bluetoothLeScanner = bluetoothAdapter.getBluetoothLeScanner();
         handler = new Handler();
         leDeviceListAdapter = new LeDeviceListAdapter(this.getLayoutInflater());
 
