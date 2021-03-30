@@ -1,6 +1,5 @@
 package com.example.equinethermalglove;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -10,7 +9,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.XAxis;
@@ -19,16 +17,11 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.ValueFormatter;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.DocumentReference;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.SimpleTimeZone;
 
 public class displayNewHorse extends AppCompatActivity {
 
@@ -43,7 +36,6 @@ public class displayNewHorse extends AppCompatActivity {
     BarChart barChart;
     ArrayList<Integer> dt = new ArrayList<>();
     String userID;
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     // TODO: add logic for returning to database menu and deleting horse
     @Override
@@ -56,7 +48,7 @@ public class displayNewHorse extends AppCompatActivity {
         horse = findViewById(R.id.horse_name);
         dt.add(12); dt.add(34); dt.add(21); dt.add(54); dt.add(2);
         limb = findViewById(R.id.horseLimb);
-        userID = "test";
+        userID = dbManager.getAuth().getCurrentUser().getEmail();
         String[] limbOptions = {"Front Left", "Front Right", "Back Left", "Back Right"};
         ArrayAdapter<String> sAdapt = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, limbOptions);
         limb.setAdapter(sAdapt);
@@ -146,7 +138,7 @@ public class displayNewHorse extends AppCompatActivity {
         HashMap<String, Object> data = new HashMap<>();
         data.put("temp", dt);
 
-        db.collection(userID).document(horseName).set(user).addOnCompleteListener(task -> {
+        dbManager.getdB().collection(userID).document(horseName).set(user).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 Log.d("data added", "Data added to database");
             } else {
@@ -156,13 +148,30 @@ public class displayNewHorse extends AppCompatActivity {
 
         Calendar curDate = Calendar.getInstance();
         String date = curDate.get(Calendar.DAY_OF_MONTH) + "-" + (curDate.get(Calendar.MONTH) + 1) + "-" + curDate.get(Calendar.YEAR);
+        String[] limbs = {"frontLeft", "frontRight", "backLeft", "backRight"};
+        HashMap<String, Object> empty = new HashMap<>();
+        ArrayList<Integer> emptyData = new ArrayList<>();
+        emptyData.add(0); emptyData.add(0); emptyData.add(0); emptyData.add(0); emptyData.add(0);
+        empty.put("temp", emptyData);
 
-        db.collection(userID).document(horseName).collection(limb).document(date).set(data).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                Log.d("data added", "Data added to database");
+        for (int i = 0; i < 4; i++) {
+            if (limb.equals(limbs[i])) {
+                dbManager.getdB().collection(userID).document(horseName).collection(limb).document(date).set(data).addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Log.d("data added", "Data added to database");
+                    } else {
+                        Log.d("data added", "data not added to database");
+                    }
+                });
             } else {
-                Log.d("data added", "data not added to database");
+                dbManager.getdB().collection(userID).document(horseName).collection(limbs[i]).document(date).set(empty).addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Log.d("data added", "Data added to database");
+                    } else {
+                        Log.d("data added", "data not added to database");
+                    }
+                });
             }
-        });
+        }
     }
 }

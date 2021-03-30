@@ -11,11 +11,14 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -36,24 +39,25 @@ public class viewOldDataMain extends AppCompatActivity {
     Spinner limbs;
     String userID;
     HashMap<String, Integer> data = new HashMap<>();
+    static dbManager dbm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_old_data_main);
 
-        userID = "test";
         final Button del = findViewById(R.id.delData);
         final Button viewData = findViewById(R.id.viewData);
         final ListView horses = findViewById(R.id.horseList);
+        final TextView user = findViewById(R.id.username);
         limbs = findViewById(R.id.limbs);
-
         String[] limbOptions = {"Front Left", "Front Right", "Back Left", "Back Right"};
         ArrayAdapter<String> sAdapt = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, limbOptions);
         limbs.setAdapter(sAdapt);
+        user.setText(dbManager.getAuth().getCurrentUser().getEmail());
+        userID = user.getText().toString();
 
         horseNames = new ArrayList<>();
-
         adapt = new ArrayAdapter<>(this, R.layout.horse_name_layout, horseNames);
         horses.setAdapter(adapt);
 
@@ -61,7 +65,7 @@ public class viewOldDataMain extends AppCompatActivity {
         viewData.setVisibility(Button.GONE);
 
         // get all horse names from firestore
-        db.collection(userID).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        dbManager.getdB().collection(userID).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
 
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -99,8 +103,8 @@ public class viewOldDataMain extends AppCompatActivity {
                     } else {
                         limb = "";
                     }
-                    data.put(horseNames.get(selected), 0);
-                    db.collection(userID).document(horseNames.get(selected)).collection(limb).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    data.put(horseNames.get(selected), -1);
+                    dbManager.getdB().collection(userID).document(horseNames.get(selected)).collection(limb).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             if (task.isSuccessful()) {
@@ -139,7 +143,7 @@ public class viewOldDataMain extends AppCompatActivity {
                     // TODO: delete horse data from database
                     // optional ask in fragment before delete.
 
-                    db.collection(userID).document(horseNames.get(selected)).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    dbManager.getdB().collection(userID).document(horseNames.get(selected)).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {

@@ -48,7 +48,7 @@ public class displayExistingHorse extends AppCompatActivity {
         dt = (HashMap<String, Integer>) getIntent().getSerializableExtra("data");
         maxX = dt.size() - 1;
         for (Map.Entry<String, Integer> e : dt.entrySet()) {
-            if (Objects.equals(0, e.getValue())) {
+            if (Objects.equals(-1, e.getValue())) {
                 SET_LABEL = e.getKey();
                 dt.remove(e.getKey());
             }
