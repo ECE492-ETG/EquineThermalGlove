@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
         // start bluetooth connection
         btConn.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, displayNewHorse.class);
+            Intent intent = new Intent(MainActivity.this, bluetoothScan.class);
             startActivity(intent);
         });
 
