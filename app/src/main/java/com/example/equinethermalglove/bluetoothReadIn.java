@@ -103,7 +103,11 @@ public class bluetoothReadIn extends AppCompatActivity {
                 // Show all the supported services and characteristics on the
                 // user interface.
 //                displayGattServices(bluetooth.getSupportedGattServices());
-                readTemperature();
+                try {
+                    readTemperature();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             } else if (bluetooth.ACTION_DATA_AVAILABLE.equals(action)) {
                 if (intent.hasExtra(bluetooth.THUMB_DATA)) {
                     displayData("thumb", intent.getStringExtra(bluetooth.THUMB_DATA));
@@ -189,7 +193,7 @@ public class bluetoothReadIn extends AppCompatActivity {
         }
     }
 
-    private void readTemperature() {
+    private void readTemperature() throws InterruptedException {
         BluetoothGattCharacteristic thumb_temp = null;
         BluetoothGattCharacteristic index_temp = null;
         BluetoothGattCharacteristic middle_temp = null;
@@ -213,17 +217,16 @@ public class bluetoothReadIn extends AppCompatActivity {
             Log.e(TAG, "UUID_ETG_Service not found.");
             return;
         }
-        btService.readCharacteristic(thumb_temp);
-        btService.readCharacteristic(index_temp);
-        btService.readCharacteristic(middle_temp);
-        btService.readCharacteristic(ring_temp);
-        btService.readCharacteristic(pinkie_temp);
-        btService.readCharacteristic(battery_life);
         btService.setCharacteristicNotification(thumb_temp, true);
+        Thread.sleep(200);
         btService.setCharacteristicNotification(index_temp, true);
+        Thread.sleep(200);
         btService.setCharacteristicNotification(middle_temp, true);
+        Thread.sleep(200);
         btService.setCharacteristicNotification(ring_temp, true);
+        Thread.sleep(200);
         btService.setCharacteristicNotification(pinkie_temp, true);
+        Thread.sleep(200);
         btService.setCharacteristicNotification(battery_life, true);
     }
 }

@@ -10,7 +10,7 @@
         android:id="@+id/temperature_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="164dp"
+        android:layout_marginTop="192dp"
         android:text="@string/temperature"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -23,7 +23,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="216dp"
+        android:layout_marginTop="232dp"
         android:text="..."
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
@@ -34,7 +34,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="300dp"
+        android:layout_marginTop="144dp"
         android:text="@string/connection_state_label"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
@@ -55,11 +55,11 @@
         android:id="@+id/connection_state"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="352dp"
+        android:layout_marginTop="144dp"
         android:text="@string/disconnected"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/device_name"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -77,7 +77,7 @@
         android:id="@+id/save_measurement_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="412dp"
+        android:layout_marginTop="444dp"
         android:text="@string/save_measurement"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -89,10 +89,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="216dp"
+        android:layout_marginTop="272dp"
         android:text="..."
         android:textSize="24sp"
-        app:layout_constraintStart_toEndOf="@+id/temperature_value_thumb"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -100,10 +100,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="216dp"
+        android:layout_marginTop="312dp"
         android:text="..."
         android:textSize="24sp"
-        app:layout_constraintStart_toEndOf="@+id/temperature_value_index"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -111,10 +111,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="216dp"
+        android:layout_marginTop="352dp"
         android:text="..."
         android:textSize="24sp"
-        app:layout_constraintStart_toEndOf="@+id/temperature_value_middle"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -122,21 +122,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="216dp"
+        android:layout_marginTop="392dp"
         android:text="..."
         android:textSize="24sp"
-        app:layout_constraintStart_toEndOf="@+id/temperature_value_ring"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/battery_value"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="64dp"
-        android:layout_marginTop="260dp"
+        android:layout_marginTop="312dp"
+        android:layout_marginEnd="120dp"
         android:text="..."
         android:textSize="24sp"
-        app:layout_constraintStart_toEndOf="@+id/temperature_value_pinkie"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

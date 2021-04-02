@@ -138,40 +138,70 @@ public class bluetooth extends Service {
         // This is special handling for the ETG Temperature Measurement
         if (UUID_ETG_Temperature_Thumb.equals(characteristic.getUuid())) {
             final byte[] data = characteristic.getValue();
-            int temperature = data[0] & 0xff;
-            Log.d(TAG, String.format("Received Thumb Temperature: %d", temperature));
+            String temperature = null;
+            try {
+                temperature = new String(data, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            Log.d(TAG, String.format("Received Thumb Temperature: %s", temperature));
             intent.putExtra(THUMB_DATA, String.valueOf(temperature));
 
         }
         if (UUID_ETG_Temperature_Index.equals(characteristic.getUuid())) {
             final byte[] data = characteristic.getValue();
-            int temperature = data[0] & 0xff;
-            Log.d(TAG, String.format("Received Index Temperature: %d", temperature));
+            String temperature = null;
+            try {
+                temperature = new String(data, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            Log.d(TAG, String.format("Received Index Temperature: %s", temperature));
             intent.putExtra(INDEX_DATA, String.valueOf(temperature));
         }
         if (UUID_ETG_Temperature_Middle.equals(characteristic.getUuid())) {
             final byte[] data = characteristic.getValue();
-            int temperature = data[0] & 0xff;
-            Log.d(TAG, String.format("Received Middle Temperature: %d", temperature));
+            String temperature = null;
+            try {
+                temperature = new String(data, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            Log.d(TAG, String.format("Received Middle Temperature: %s", temperature));
             intent.putExtra(MIDDLE_DATA, String.valueOf(temperature));
         }
         if (UUID_ETG_Temperature_Ring.equals(characteristic.getUuid())) {
             final byte[] data = characteristic.getValue();
-            int temperature = data[0] & 0xff;
-            Log.d(TAG, String.format("Received Ring Temperature: %d", temperature));
+            String temperature = null;
+            try {
+                temperature = new String(data, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            Log.d(TAG, String.format("Received Ring Temperature: %s", temperature));
             intent.putExtra(RING_DATA, String.valueOf(temperature));
         }
         if (UUID_ETG_Temperature_Pinkie.equals(characteristic.getUuid())) {
             final byte[] data = characteristic.getValue();
-            int temperature = data[0] & 0xff;
-            Log.d(TAG, String.format("Received Pinkie Temperature: %d", temperature));
+            String temperature = null;
+            try {
+                temperature = new String(data, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            Log.d(TAG, String.format("Received Pinkie Temperature: %s", temperature));
             intent.putExtra(PINKIE_DATA, String.valueOf(temperature));
         }
         if (UUID_ETG_Battery.equals(characteristic.getUuid())) {
             final byte[] data = characteristic.getValue();
-            int battery = data[0] & 0xff;
-            Log.d(TAG, String.format("Received Battery Life: %d", battery));
-            intent.putExtra(BATT_DATA, String.valueOf(battery));
+            String battery = null;
+            try {
+                battery = new String(data, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            Log.d(TAG, String.format("Received Battery Life: %s", battery));
+            intent.putExtra(BATT_DATA, battery);
         } else {
             // For all other profiles, writes the data formatted in HEX.
             final byte[] data = characteristic.getValue();
@@ -207,11 +237,11 @@ public class bluetooth extends Service {
      * @param characteristic Characteristic to act on.
      * @param enabled If true, enable notification.  False otherwise.
      */
-    public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic,
+    public boolean setCharacteristicNotification(BluetoothGattCharacteristic characteristic,
                                               boolean enabled) {
         if (bluetoothAdapter == null || bluetoothGatt == null) {
             Log.w(TAG, "BluetoothAdapter not initialized");
-            return;
+            return false;
         }
         bluetoothGatt.setCharacteristicNotification(characteristic, enabled);
 
@@ -227,6 +257,9 @@ public class bluetooth extends Service {
                     UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")); //tbh I'm not sure why the descriptor is this UUID
             descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
             bluetoothGatt.writeDescriptor(descriptor);
+            return true;
+        } else {
+            return false;
         }
     }
 
