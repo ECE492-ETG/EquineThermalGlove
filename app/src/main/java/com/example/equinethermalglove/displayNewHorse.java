@@ -30,6 +30,7 @@ import java.util.HashMap;
 
 public class displayNewHorse extends AppCompatActivity {
 
+    // global variables
     private static final int maxX = 5;
     private static final int maxY = 200;
     private static final int minY = 0;
@@ -42,12 +43,18 @@ public class displayNewHorse extends AppCompatActivity {
     ArrayList<Integer> dt = new ArrayList<>();
     String userID;
 
-    // TODO: add logic for returning to database menu and deleting horse
+    // TODO: display battery life
+
+    /**
+     * Function called when activity is invoked
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_new_horse);
 
+        // initialize variables
         final Button rtn = findViewById(R.id.return_btn);
         final Button save = findViewById(R.id.save_btn);
         horse = findViewById(R.id.horse_name);
@@ -60,13 +67,15 @@ public class displayNewHorse extends AppCompatActivity {
 
         rtn.setVisibility(Button.GONE);
 
+        // return if return button pressed
         rtn.setOnClickListener(v -> {
             Intent intent = new Intent(displayNewHorse.this, MainActivity.class);
             startActivity(intent);
         });
 
+        // save data to database on save button pressed
         save.setOnClickListener(v -> {
-            //TODO: add functionality to save data to firebase database
+            // get the chosen horse name and limb
             String h = horse.getText().toString();
             String l;
             if (limb.getSelectedItem() == "Front Right") {
@@ -80,21 +89,32 @@ public class displayNewHorse extends AppCompatActivity {
             } else {
                 l = "";
             }
+            // write the data to the database
             writeToDb(h, l);
             save.setVisibility(Button.GONE);
             rtn.setVisibility(Button.VISIBLE);
         });
+
         // get the data from bluetooth scan for display
         //dt = getIntent().getSerializableExtra("data");
+
+        // create barchart and display to user
         barChart = findViewById(R.id.barchart);
         BarData data = createData();
         appearance();
         prepareData(data);
     }
 
+    /**
+     * set up the data to be displayed
+     * @return
+     *      the data to be displayed
+     */
     private BarData createData() {
+        // TODO: separate battery life from temperatures for display
         ArrayList<BarEntry> values = new ArrayList<>();
         int x, y;
+        // get data from bluetooth read in and set for display
         for (int i = 0; i < maxX; i++) {
             x = i;
             // get the data from bluetooth for display
@@ -107,12 +127,20 @@ public class displayNewHorse extends AppCompatActivity {
         return new BarData(set);
     }
 
+    /**
+     * send the data to the front end for display
+     * @param data
+     *      the data to be displayed
+     */
     private void prepareData(BarData data) {
         data.setValueTextSize(12f);
         barChart.setData(data);
         barChart.invalidate();
     }
 
+    /**
+     * set up the front end for display
+     */
     private void appearance() {
         barChart.getDescription().setEnabled(false);
         barChart.setDrawValueAboveBar(false);
@@ -137,6 +165,13 @@ public class displayNewHorse extends AppCompatActivity {
         rAxis.setAxisMinimum(0);
     }
 
+    /**
+     * write the data to the firestore database
+     * @param horseName
+     *      the horse name
+     * @param limb
+     *      The limb measured
+     */
     private void writeToDb(String horseName, String limb) {
         HashMap<String, Object> user = new HashMap<>();
         user.put("value", 1);
@@ -145,6 +180,7 @@ public class displayNewHorse extends AppCompatActivity {
         Calendar curDate = Calendar.getInstance();
         String date = curDate.get(Calendar.DAY_OF_MONTH) + "-" + (curDate.get(Calendar.MONTH) + 1) + "-" + curDate.get(Calendar.YEAR);
 
+        // check if the horse already exists in the database
         if (!horseExists(horseName)) {
             Log.d("horse exists", "false");
             ArrayList<Integer> emptyData = new ArrayList<>();
@@ -161,6 +197,7 @@ public class displayNewHorse extends AppCompatActivity {
                 }
             });
 
+            // if horse does not exist, setup the limbs to avoid app crashing later
             for (int i = 0; i < 4; i++) {
                 dbManager.getdB().collection(userID).document(horseName).collection(limbs[i]).document("init").set(empty).addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -172,6 +209,7 @@ public class displayNewHorse extends AppCompatActivity {
             }
         }
 
+        // add the new measurement data to the database
         dbManager.getdB().collection(userID).document(horseName).collection(limb).document(date).set(data).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
@@ -184,6 +222,13 @@ public class displayNewHorse extends AppCompatActivity {
         });
     }
 
+    /**
+     * check if the horse is in the database (case sensitive)
+     * @param horse
+     *      The horse to be checked
+     * @return
+     *      true if the horse is in the database, false otherwise
+     */
     private boolean horseExists(String horse) {
         final boolean[] isHorse = new boolean[1];
         dbManager.getdB().collection(userID).document(horse).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {

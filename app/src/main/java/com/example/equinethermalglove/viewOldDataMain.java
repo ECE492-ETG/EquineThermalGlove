@@ -33,7 +33,7 @@ import static java.lang.Integer.parseInt;
 
 public class viewOldDataMain extends AppCompatActivity {
 
-    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    // global variables;
     ArrayList<String> horseNames;
     ArrayAdapter<String> adapt;
     Spinner limbs;
@@ -41,11 +41,16 @@ public class viewOldDataMain extends AppCompatActivity {
     HashMap<String, Integer> data = new HashMap<>();
     static dbManager dbm;
 
+    /**
+     * function called when activity is invoked
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_old_data_main);
 
+        // variable initialization
         final Button del = findViewById(R.id.delData);
         final Button viewData = findViewById(R.id.viewData);
         final ListView horses = findViewById(R.id.horseList);
@@ -57,10 +62,12 @@ public class viewOldDataMain extends AppCompatActivity {
         user.setText(dbManager.getAuth().getCurrentUser().getEmail());
         userID = user.getText().toString();
 
+        // set the listview to display horses in the firestore database
         horseNames = new ArrayList<>();
         adapt = new ArrayAdapter<>(this, R.layout.horse_name_layout, horseNames);
         horses.setAdapter(adapt);
 
+        // only show buttons if a horse is selected
         del.setVisibility(Button.GONE);
         viewData.setVisibility(Button.GONE);
 
@@ -81,10 +88,12 @@ public class viewOldDataMain extends AppCompatActivity {
             }
         });
 
+        // when a horse is selected show buttons
         horses.setOnItemClickListener((parent, view, position, id) -> {
             del.setVisibility(Button.VISIBLE);
             viewData.setVisibility(Button.VISIBLE);
 
+            // move to display data when view button is pressed
             viewData.setOnClickListener(new View.OnClickListener() {
                 final int selected = position;
 
@@ -92,6 +101,7 @@ public class viewOldDataMain extends AppCompatActivity {
                 public void onClick(View view) {
                     Intent intent = new Intent(viewOldDataMain.this, displayExistingHorse.class);
                     String limb;
+                    // get chosen limb
                     if (limbs.getSelectedItem() == "Front Right") {
                         limb = "frontRight";
                     } else if(limbs.getSelectedItem() == "Front Left") {
@@ -103,6 +113,7 @@ public class viewOldDataMain extends AppCompatActivity {
                     } else {
                         limb = "";
                     }
+                    // get all data from chosen limb and send to next activity
                     data.put(horseNames.get(selected), -1);
                     dbManager.getdB().collection(userID).document(horseNames.get(selected)).collection(limb).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
@@ -110,11 +121,13 @@ public class viewOldDataMain extends AppCompatActivity {
                             if (task.isSuccessful()) {
                                 for (QueryDocumentSnapshot document : task.getResult()) {
                                     String temp = document.get("temp").toString();
+                                    // remove all but the numbers from the data
                                     temp = temp.replaceAll(",", "");
                                     temp = temp.replaceAll("\\[", "");
                                     temp = temp.replaceAll("]", "");
                                     ArrayList<String> dt = new ArrayList<>();
                                     dt.addAll(Arrays.asList(temp.split(" ")));
+                                    // get the average of each measurement array
                                     int avg = 0;
                                     for (int i = 0; i < dt.size(); i++) {
                                         avg += parseInt(dt.get(i));
@@ -133,6 +146,7 @@ public class viewOldDataMain extends AppCompatActivity {
                 }
             });
 
+            // delete horse from database if delete is pressed
             del.setOnClickListener(new View.OnClickListener() {
                final int selected = position;
                 @Override
@@ -159,6 +173,15 @@ public class viewOldDataMain extends AppCompatActivity {
         });
     }
 
+    /**
+     * when finish is called from another activity started by startActivityForResult()
+     * @param requestCode
+     *      code sent when activity called
+     * @param resultCode
+     *      return code
+     * @param horse
+     *      data returned from activity
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent horse) {
         super.onActivityResult(requestCode, resultCode, horse);

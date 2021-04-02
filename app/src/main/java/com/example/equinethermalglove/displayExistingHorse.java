@@ -31,6 +31,7 @@ import java.util.Set;
 
 public class displayExistingHorse extends AppCompatActivity {
 
+    // global variables
     private static int maxX;
     private static final int maxY = 200;
     private static final int minY = 0;
@@ -41,16 +42,22 @@ public class displayExistingHorse extends AppCompatActivity {
     HashMap<String, Integer> dt;
     private Button rtn;
 
+    /**
+     * function called when the activity is invoked
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_existing_horse);
 
+        // variable initialization
         rtn = findViewById(R.id.return_btn);
         dt = (HashMap<String, Integer>) getIntent().getSerializableExtra("data");
         maxX = dt.size() - 1;
         Log.d("Check", "about to find horseName");
         String removed = "";
+        // get the horse name chosen and remove it from the rest of the data
         for (Map.Entry<String, Integer> e : dt.entrySet()) {
             Log.d("data", e.getKey() + " " + String.valueOf(e.getValue()));
             if (Objects.equals(-1, e.getValue())) {
@@ -60,6 +67,8 @@ public class displayExistingHorse extends AppCompatActivity {
             }
         }
         dt.remove(removed);
+
+        // setup the bar chart to display data
         barChart = findViewById(R.id.barchart);
         BarData data = createData();
         appearance();
@@ -70,11 +79,15 @@ public class displayExistingHorse extends AppCompatActivity {
         });
     }
 
+    /**
+     * creates the front end of the bar chart for display
+     */
     public void appearance() {
         barChart.getDescription().setEnabled(false);
         barChart.setDrawValueAboveBar(false);
         XAxis x = barChart.getXAxis();
         Object[] l = labels.toArray();
+        // set the labels for each bar in the barchart
         x.setValueFormatter(new ValueFormatter() {
             @Override
             public String getFormattedValue(float value) {
@@ -92,22 +105,34 @@ public class displayExistingHorse extends AppCompatActivity {
         rAxis.setAxisMinimum(0);
     }
 
+    /**
+     * sets the data to be displayed and displays it
+     * @param data
+     *      The data to be displayed
+     */
     public void prepareData(BarData data) {
         data.setValueTextSize(12f);
         barChart.setData(data);
         barChart.invalidate();
     }
 
+    /**
+     * creates the data to be displayed
+     * @return
+     *      The new data that will be displayed to the user
+     */
     public BarData createData() {
         ArrayList<BarEntry> values = new ArrayList<>();
         int x;
         ArrayList<Integer> y = new ArrayList<>();
         int j = 0;
+        // sets up each bar for the barchart
         for (Map.Entry<String, Integer> e : dt.entrySet()) {
             labels.add(e.getKey());
             y.add(e.getValue());
             j++;
         }
+        // reverses the labels and y coordinates so that they are in chronological order
         Collections.reverse(labels);
         Collections.reverse(y);
         for (int i = 0; i < maxX; i++) {
