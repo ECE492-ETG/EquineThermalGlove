@@ -45,16 +45,36 @@ public class bluetooth extends Service {
             "com.example.bluetooth.le.ACTION_GATT_SERVICES_DISCOVERED";
     public final static String ACTION_DATA_AVAILABLE =
             "com.example.bluetooth.le.ACTION_DATA_AVAILABLE";
+    public final static String THUMB_DATA =
+            "com.example.bluetooth.le.THUMB_DATA";
+    public final static String INDEX_DATA =
+            "com.example.bluetooth.le.INDEX_DATA";
+    public final static String MIDDLE_DATA =
+            "com.example.bluetooth.le.MIDDLE_DATA";
+    public final static String RING_DATA =
+            "com.example.bluetooth.le.RING_DATA";
+    public final static String PINKIE_DATA =
+            "com.example.bluetooth.le.PINKIE_DATA";
+    public final static String BATT_DATA =
+            "com.example.bluetooth.le.BATT_DATA";
     public final static String EXTRA_DATA =
             "com.example.bluetooth.le.EXTRA_DATA";
 
     // ETG UUID
     public final static UUID UUID_ETG_Service =
             UUID.fromString("089915a8-1528-437a-b378-f731190c0745");
-    public final static UUID UUID_ETG_Temperature =
+    public final static UUID UUID_ETG_Temperature_Thumb =
             UUID.fromString("08990001-1528-437a-b378-f731190c0745");
-    public final static UUID UUID_ETG_Battery =
+    public final static UUID UUID_ETG_Temperature_Index =
             UUID.fromString("08990002-1528-437a-b378-f731190c0745");
+    public final static UUID UUID_ETG_Temperature_Middle =
+            UUID.fromString("08990003-1528-437a-b378-f731190c0745");
+    public final static UUID UUID_ETG_Temperature_Ring =
+            UUID.fromString("08990004-1528-437a-b378-f731190c0745");
+    public final static UUID UUID_ETG_Temperature_Pinkie =
+            UUID.fromString("08990005-1528-437a-b378-f731190c0745");
+    public final static UUID UUID_ETG_Battery =
+            UUID.fromString("08990006-1528-437a-b378-f731190c0745");
 
     // Various callback methods defined by the BLE API.
     private final BluetoothGattCallback gattCallback =
@@ -116,14 +136,42 @@ public class bluetooth extends Service {
         final Intent intent = new Intent(action);
 
         // This is special handling for the ETG Temperature Measurement
-        if (UUID_ETG_Temperature.equals(characteristic.getUuid())) {
-
-            // TODO: May need to change this if we change the data-type passed
+        if (UUID_ETG_Temperature_Thumb.equals(characteristic.getUuid())) {
             final byte[] data = characteristic.getValue();
             int temperature = data[0] & 0xff;
-            Log.d(TAG, String.format("Received temperature: %d", temperature));
-            intent.putExtra(EXTRA_DATA, String.valueOf(temperature));
+            Log.d(TAG, String.format("Received Thumb Temperature: %d", temperature));
+            intent.putExtra(THUMB_DATA, String.valueOf(temperature));
 
+        }
+        if (UUID_ETG_Temperature_Index.equals(characteristic.getUuid())) {
+            final byte[] data = characteristic.getValue();
+            int temperature = data[0] & 0xff;
+            Log.d(TAG, String.format("Received Index Temperature: %d", temperature));
+            intent.putExtra(INDEX_DATA, String.valueOf(temperature));
+        }
+        if (UUID_ETG_Temperature_Middle.equals(characteristic.getUuid())) {
+            final byte[] data = characteristic.getValue();
+            int temperature = data[0] & 0xff;
+            Log.d(TAG, String.format("Received Middle Temperature: %d", temperature));
+            intent.putExtra(MIDDLE_DATA, String.valueOf(temperature));
+        }
+        if (UUID_ETG_Temperature_Ring.equals(characteristic.getUuid())) {
+            final byte[] data = characteristic.getValue();
+            int temperature = data[0] & 0xff;
+            Log.d(TAG, String.format("Received Ring Temperature: %d", temperature));
+            intent.putExtra(RING_DATA, String.valueOf(temperature));
+        }
+        if (UUID_ETG_Temperature_Pinkie.equals(characteristic.getUuid())) {
+            final byte[] data = characteristic.getValue();
+            int temperature = data[0] & 0xff;
+            Log.d(TAG, String.format("Received Pinkie Temperature: %d", temperature));
+            intent.putExtra(PINKIE_DATA, String.valueOf(temperature));
+        }
+        if (UUID_ETG_Battery.equals(characteristic.getUuid())) {
+            final byte[] data = characteristic.getValue();
+            int battery = data[0] & 0xff;
+            Log.d(TAG, String.format("Received Battery Life: %d", battery));
+            intent.putExtra(BATT_DATA, String.valueOf(battery));
         } else {
             // For all other profiles, writes the data formatted in HEX.
             final byte[] data = characteristic.getValue();
@@ -168,7 +216,7 @@ public class bluetooth extends Service {
         bluetoothGatt.setCharacteristicNotification(characteristic, enabled);
 
         // This is specific to ETG
-        if (UUID_ETG_Temperature.equals(characteristic.getUuid())) {
+        if (UUID_ETG_Temperature_Thumb.equals(characteristic.getUuid())) {
             BluetoothGattDescriptor descriptor = characteristic.getDescriptor(
                     UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")); //tbh I'm not sure why the descriptor is this UUID
             descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);

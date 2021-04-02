@@ -31,7 +31,12 @@ public class bluetoothReadIn extends AppCompatActivity {
     private boolean connected = false;
     private BluetoothGattCharacteristic notifyCharacteristic;
 
-    private TextView tempVal;
+    private TextView thumbTemp;
+    private TextView indexTemp;
+    private TextView middleTemp;
+    private TextView ringTemp;
+    private TextView pinkieTemp;
+    private TextView batteryVal;
     private TextView connectionState;
 
     private final ServiceConnection serviceConnection = new ServiceConnection() {
@@ -64,7 +69,12 @@ public class bluetoothReadIn extends AppCompatActivity {
 
         ((TextView) findViewById(R.id.device_name_readin)).setText(deviceName);
         ((TextView) findViewById(R.id.device_address_readin)).setText(deviceAddress);
-        tempVal = findViewById(R.id.temperature_value);
+        thumbTemp = findViewById(R.id.temperature_value_thumb);
+        indexTemp = findViewById(R.id.temperature_value_index);
+        middleTemp = findViewById(R.id.temperature_value_middle);
+        ringTemp = findViewById(R.id.temperature_value_ring);
+        pinkieTemp = findViewById(R.id.temperature_value_pinkie);
+        batteryVal = findViewById(R.id.battery_value);
         connectionState = findViewById(R.id.connection_state);
 
         Intent gattServiceIntent = new Intent(this, bluetooth.class);
@@ -95,7 +105,24 @@ public class bluetoothReadIn extends AppCompatActivity {
 //                displayGattServices(bluetooth.getSupportedGattServices());
                 readTemperature();
             } else if (bluetooth.ACTION_DATA_AVAILABLE.equals(action)) {
-                displayData(intent.getStringExtra(bluetooth.EXTRA_DATA));
+                if (intent.hasExtra(bluetooth.THUMB_DATA)) {
+                    displayData("thumb", intent.getStringExtra(bluetooth.THUMB_DATA));
+                }
+                if (intent.hasExtra(bluetooth.INDEX_DATA)) {
+                    displayData("index", intent.getStringExtra(bluetooth.INDEX_DATA));
+                }
+                if (intent.hasExtra(bluetooth.MIDDLE_DATA)) {
+                    displayData("middle", intent.getStringExtra(bluetooth.MIDDLE_DATA));
+                }
+                if (intent.hasExtra(bluetooth.RING_DATA)) {
+                    displayData("ring", intent.getStringExtra(bluetooth.RING_DATA));
+                }
+                if (intent.hasExtra(bluetooth.PINKIE_DATA)) {
+                    displayData("pinkie", intent.getStringExtra(bluetooth.PINKIE_DATA));
+                }
+                if (intent.hasExtra(bluetooth.BATT_DATA)) {
+                    displayData("battery", intent.getStringExtra(bluetooth.BATT_DATA));
+                }
             }
         }
     };
@@ -137,30 +164,66 @@ public class bluetoothReadIn extends AppCompatActivity {
         return intentFilter;
     }
 
-    private void displayData(String data) {
+    private void displayData(String field, String data) {
 //        Intent intent = new Intent(this, displayNewHorse.class);
 //        // TODO: get data from bluetooth and send to new class
 //        // intent.putExtra();
 //        startActivity(intent);
-        if (data != null) {
-            tempVal.setText(data);
+        if (field.equals("thumb")) {
+            thumbTemp.setText(data);
+        }
+        if (field.equals("index")) {
+            indexTemp.setText(data);
+        }
+        if (field.equals("middle")) {
+            middleTemp.setText(data);
+        }
+        if (field.equals("ring")) {
+            ringTemp.setText(data);
+        }
+        if (field.equals("pinkie")) {
+            pinkieTemp.setText(data);
+        }
+        if (field.equals("battery")) {
+            batteryVal.setText(data);
         }
     }
 
     private void readTemperature() {
-        BluetoothGattCharacteristic temp = null;
+        BluetoothGattCharacteristic thumb_temp = null;
+        BluetoothGattCharacteristic index_temp = null;
+        BluetoothGattCharacteristic middle_temp = null;
+        BluetoothGattCharacteristic ring_temp = null;
+        BluetoothGattCharacteristic pinkie_temp = null;
+        BluetoothGattCharacteristic battery_life = null;
         List<BluetoothGattService> services = btService.getSupportedGattServices();
         for (int i = 0; i < services.size(); i++) {
             BluetoothGattService gattService = services.get(i);
             if (gattService.getUuid().toString().equalsIgnoreCase(btService.UUID_ETG_Service.toString())) {
-                temp = gattService.getCharacteristic(btService.UUID_ETG_Temperature);
+                thumb_temp = gattService.getCharacteristic(btService.UUID_ETG_Temperature_Thumb);
+                index_temp = gattService.getCharacteristic(btService.UUID_ETG_Temperature_Index);
+                middle_temp = gattService.getCharacteristic(btService.UUID_ETG_Temperature_Middle);
+                ring_temp = gattService.getCharacteristic(btService.UUID_ETG_Temperature_Ring);
+                pinkie_temp = gattService.getCharacteristic(btService.UUID_ETG_Temperature_Pinkie);
+                battery_life = gattService.getCharacteristic(btService.UUID_ETG_Battery);
             }
         }
-        if (temp == null) {
+        if (thumb_temp == null || index_temp == null || middle_temp == null ||
+            ring_temp == null || pinkie_temp == null || battery_life == null) {
             Log.e(TAG, "UUID_ETG_Service not found.");
             return;
         }
-        btService.readCharacteristic(temp);
-        btService.setCharacteristicNotification(temp, true);
+        btService.readCharacteristic(thumb_temp);
+        btService.readCharacteristic(index_temp);
+        btService.readCharacteristic(middle_temp);
+        btService.readCharacteristic(ring_temp);
+        btService.readCharacteristic(pinkie_temp);
+        btService.readCharacteristic(battery_life);
+        btService.setCharacteristicNotification(thumb_temp, true);
+        btService.setCharacteristicNotification(index_temp, true);
+        btService.setCharacteristicNotification(middle_temp, true);
+        btService.setCharacteristicNotification(ring_temp, true);
+        btService.setCharacteristicNotification(pinkie_temp, true);
+        btService.setCharacteristicNotification(battery_life, true);
     }
 }
