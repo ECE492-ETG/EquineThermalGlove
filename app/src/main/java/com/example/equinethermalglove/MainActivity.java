@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
         final Button loginProfileButton = findViewById(R.id.login_profile_button);
 
         btConn.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, displayNewHorse.class);
+            Intent intent = new Intent(MainActivity.this, bluetoothScan.class);
             startActivity(intent);
         });
 

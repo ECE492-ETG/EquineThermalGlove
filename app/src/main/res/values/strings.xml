@@ -4,9 +4,13 @@
     <string name="unknown_device">Unknown Device</string>
     <string name="connected">Connected</string>
     <string name="disconnected">Disconnected</string>
+    <string name="refresh_scan">Refresh Scan</string>
     <string name="etg_login_title">ETG Login/Register</string>
     <string name="enter_email">Enter Email</string>
     <string name="enter_password">Enter Password</string>
     <string name="sign_in">Sign In</string>
     <string name="register">Register</string>
+    <string name="temperature">Temperature (degrees C):</string>
+    <string name="connection_state_label">Connection State:</string>
+    <string name="save_measurement">Save Measurement</string>
 </resources>
