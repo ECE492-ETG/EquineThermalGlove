@@ -3,6 +3,7 @@ package com.example.equinethermalglove;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
@@ -12,6 +13,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.equinethermalglove.adapters.LeDeviceListAdapter;
@@ -30,7 +35,13 @@ public class bluetoothScan extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_bluetooth_read_in);
+        setContentView(R.layout.activity_bluetooth_scan);
+
+        final Button refreshScan = findViewById(R.id.refresh_scan_button);
+
+        refreshScan.setOnClickListener(v -> {
+            scanLeDevice();
+        });
 
         // Make sure BLE is supported on the device
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
@@ -49,9 +60,31 @@ public class bluetoothScan extends AppCompatActivity {
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }
 
-        bluetoothLeScanner = BluetoothAdapter.getDefaultAdapter().getBluetoothLeScanner();
+        bluetoothLeScanner = bluetoothAdapter.getBluetoothLeScanner();
         handler = new Handler();
         leDeviceListAdapter = new LeDeviceListAdapter(this.getLayoutInflater());
+
+        ListView bleDeviceList = findViewById(R.id.ble_device_list);
+        bleDeviceList.setAdapter(leDeviceListAdapter);
+
+        bleDeviceList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // DEVICE SELECTED FROM LIST
+                BluetoothDevice bleDevice = (BluetoothDevice) parent.getItemAtPosition(position);
+                if (bleDevice == null) return;
+                final Intent intent = new Intent(bluetoothScan.this, bluetoothReadIn.class);
+                intent.putExtra(bluetoothReadIn.EXTRAS_DEVICE_NAME, bleDevice.getName());
+                intent.putExtra(bluetoothReadIn.EXTRAS_DEVICE_ADDRESS, bleDevice.getAddress());
+                if (mScanning) {
+                    bluetoothLeScanner.stopScan(leScanCallback);
+                    mScanning = false;
+                }
+                startActivity(intent);
+            }
+        });
+
+        scanLeDevice();
     }
 
     private void scanLeDevice() {
