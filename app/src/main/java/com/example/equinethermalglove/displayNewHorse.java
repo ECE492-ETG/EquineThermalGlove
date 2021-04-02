@@ -31,7 +31,7 @@ import java.util.HashMap;
 public class displayNewHorse extends AppCompatActivity {
 
     // global variables
-    private static final int maxX = 5;
+    private static final int maxX = 6;
     private static final int maxY = 200;
     private static final int minY = 0;
     private static final String SET_LABEL = "Horse Temperature Data";
@@ -58,10 +58,10 @@ public class displayNewHorse extends AppCompatActivity {
         final Button rtn = findViewById(R.id.return_btn);
         final Button save = findViewById(R.id.save_btn);
         horse = findViewById(R.id.horse_name);
-        dt.add(12); dt.add(34); dt.add(21); dt.add(54); dt.add(2);
+        dt.add(12); dt.add(34); dt.add(21); dt.add(54); dt.add(2); dt.add(88);
         limb = findViewById(R.id.horseLimb);
         userID = dbManager.getAuth().getCurrentUser().getEmail();
-        String[] limbOptions = {"Front Left", "Front Right", "Back Left", "Back Right"};
+        String[] limbOptions = {"Front Left", "Front Right", "Back Left", "Back Right"}; labels.add("Battery Life %");
         ArrayAdapter<String> sAdapt = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, limbOptions);
         limb.setAdapter(sAdapt);
 
