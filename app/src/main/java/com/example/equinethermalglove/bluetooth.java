@@ -216,7 +216,13 @@ public class bluetooth extends Service {
         bluetoothGatt.setCharacteristicNotification(characteristic, enabled);
 
         // This is specific to ETG
-        if (UUID_ETG_Temperature_Thumb.equals(characteristic.getUuid())) {
+        if (UUID_ETG_Temperature_Thumb.equals(characteristic.getUuid()) ||
+                UUID_ETG_Temperature_Index.equals(characteristic.getUuid()) ||
+                UUID_ETG_Temperature_Middle.equals(characteristic.getUuid()) ||
+                UUID_ETG_Temperature_Ring.equals(characteristic.getUuid()) ||
+                UUID_ETG_Temperature_Pinkie.equals(characteristic.getUuid()) ||
+                UUID_ETG_Battery.equals(characteristic.getUuid()))
+        {
             BluetoothGattDescriptor descriptor = characteristic.getDescriptor(
                     UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")); //tbh I'm not sure why the descriptor is this UUID
             descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
