@@ -21,8 +21,12 @@ import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 
 import java.util.regex.Pattern;
 
+/**
+ * login activity so that new users can register and existing users can login and modify their profiles
+ */
 public class LoginActivity extends AppCompatActivity {
 
+    // global variables
     private FirebaseAuth auth = FirebaseAuth.getInstance();
 
     private EditText emailField;
@@ -31,17 +35,23 @@ public class LoginActivity extends AppCompatActivity {
     private Button signInButton;
     private Button registerButton;
 
+    /**
+     * function called when acitivty is invoked
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        // variable initialization
         emailField = findViewById(R.id.email_field);
         passwordField = findViewById(R.id.password_field);
 
         signInButton = findViewById(R.id.sign_in_button);
         registerButton = findViewById(R.id.register_button);
 
+        // attempt to sign user in on button click
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -49,6 +59,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        // register new user on register button clicked
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -56,6 +67,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        // return to main activity upon successful login
         auth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -67,6 +79,9 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * attempt to sign the user in if valid information is presented to the activity
+     */
     private void attemptSignIn() {
         if(emailIsValid() & passwordIsValid()) {
             String email = emailField.getText().toString().trim().toLowerCase();
@@ -75,6 +90,13 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * sign the user in
+     * @param email
+     *      user email
+     * @param password
+     *      user password
+     */
     private void signIn(String email, String password) {
         auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
@@ -87,6 +109,11 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * check if email is valid
+     * @return
+     *      true is valid email, false otherwise
+     */
     boolean emailIsValid() {
         String email = emailField.getText().toString().trim();
 
@@ -103,6 +130,11 @@ public class LoginActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * check if valid password
+     * @return
+     *      true if valid password, false otherwise
+     */
     boolean passwordIsValid() {
         String password = passwordField.getText().toString().trim();
 
@@ -119,6 +151,9 @@ public class LoginActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * attempt to register a new user assuming new information for database
+     */
     private void attemptRegistration() {
         if (emailIsValid() & passwordIsValid()) {
             createAccount();
@@ -127,6 +162,9 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * create an account for a new user
+     */
     private void createAccount() {
 
         final String email = emailField.getText().toString().trim().toLowerCase();

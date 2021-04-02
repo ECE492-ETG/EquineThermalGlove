@@ -1,21 +1,28 @@
 package com.example.equinethermalglove;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Horse {
+public class Horse implements Serializable {
 
     // TODO: add any needed logic for horse class
-    protected ArrayList<Double> measurements;
+    protected ArrayList<ArrayList<Double>> temperatures;
+    protected String name;
 
-    public Horse(ArrayList<Double> h) {
-        this.measurements = h;
+    public Horse(String n, ArrayList<ArrayList<Double>> temp) {
+        this.temperatures = temp;
+        this.name = n;
     }
 
-    public ArrayList<Double> getMeasurements() {
-        return this.measurements;
+    public String getName() {
+        return this.name;
     }
 
-    public void setMeaurements(ArrayList<Double> h) {
-        this.measurements = h;
+    public ArrayList<ArrayList<Double>> getTemperatures() {
+        return this.temperatures;
+    }
+
+    public void setTemperatures(ArrayList<ArrayList<Double>> t) {
+        this.temperatures = t;
     }
 }

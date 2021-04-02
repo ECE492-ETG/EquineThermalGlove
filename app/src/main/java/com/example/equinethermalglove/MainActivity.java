@@ -14,27 +14,37 @@ public class MainActivity extends AppCompatActivity {
 
     private FirebaseAuth auth = FirebaseAuth.getInstance();
 
-    // TODO: add buttons for connecting to database or starting bluetooth readin
+    /**
+     * First activity loaded when app is opened
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // variable initialization
         final Button btConn = findViewById(R.id.btConn);
         final Button viewExist = findViewById(R.id.viewExisting);
         final Button loginProfileButton = findViewById(R.id.login_profile_button);
 
+        // only show buttons after user has registered or is logged in.
+//        viewExist.setVisibility(Button.VISIBLE);
+//        btConn.setVisibility(Button.VISIBLE);
+
+        // start bluetooth connection
         btConn.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, bluetoothScan.class);
             startActivity(intent);
         });
 
+        // view old data saved for user
         viewExist.setOnClickListener(v -> {
-            // change back to viewOldDataMain.class when data starts being added to database
-            Intent intent = new Intent(MainActivity.this, displayExistingHorse.class);
+            Intent intent = new Intent(MainActivity.this, viewOldDataMain.class);
             startActivity(intent);
         });
 
+        // go to login page
         loginProfileButton.setOnClickListener(v -> {
             loginOrProfile();
         });
@@ -45,6 +55,8 @@ public class MainActivity extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 if(firebaseAuth.getCurrentUser() != null) {
                     loginProfileButton.setText(firebaseAuth.getCurrentUser().getEmail());
+                    viewExist.setVisibility(Button.VISIBLE);
+                    btConn.setVisibility(Button.VISIBLE);
                 }
                 else {
                     loginProfileButton.setText(R.string.etg_login_title);
@@ -53,6 +65,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * function called when login button is pressed
+     * allows user to login or register
+     */
     public void loginOrProfile() {
         if(auth.getCurrentUser() != null) {
             // go to profile
@@ -66,6 +82,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * called when activity is resumed
+     */
     @Override
     protected void onResume() {
         super.onResume();
