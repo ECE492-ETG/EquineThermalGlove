@@ -11,11 +11,13 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class bluetoothReadIn extends AppCompatActivity {
@@ -38,6 +40,7 @@ public class bluetoothReadIn extends AppCompatActivity {
     private TextView pinkieTemp;
     private TextView batteryVal;
     private TextView connectionState;
+    private Button saveBtn;
 
     private final ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
@@ -76,11 +79,23 @@ public class bluetoothReadIn extends AppCompatActivity {
         pinkieTemp = findViewById(R.id.temperature_value_pinkie);
         batteryVal = findViewById(R.id.battery_value);
         connectionState = findViewById(R.id.connection_state);
+        saveBtn = findViewById(R.id.save_measurement_button);
 
         Intent gattServiceIntent = new Intent(this, bluetooth.class);
         if (!bindService(gattServiceIntent, serviceConnection, Context.BIND_AUTO_CREATE)) {
             Log.e(TAG, "Bluetooth service failed to bind.");
         }
+
+        saveBtn.setOnClickListener(v -> {
+            Intent i = new Intent(bluetoothReadIn.this, displayNewHorse.class);
+            // TODO: get data from bluetooth and send to new class
+            ArrayList<Double> data = new ArrayList<>();
+            data.add(Double.valueOf(thumbTemp.getText().toString())); data.add(Double.valueOf(indexTemp.getText().toString()));
+            data.add(Double.valueOf(middleTemp.getText().toString())); data.add(Double.valueOf(ringTemp.getText().toString()));
+            data.add(Double.valueOf(pinkieTemp.getText().toString()));
+            intent.putExtra("data", data);
+            startActivity(i);
+        });
     }
 
     // Handles various events fired by the Service.
@@ -169,10 +184,6 @@ public class bluetoothReadIn extends AppCompatActivity {
     }
 
     private void displayData(String field, String data) {
-//        Intent intent = new Intent(this, displayNewHorse.class);
-//        // TODO: get data from bluetooth and send to new class
-//        // intent.putExtra();
-//        startActivity(intent);
         if (field.equals("thumb")) {
             thumbTemp.setText(data);
         }

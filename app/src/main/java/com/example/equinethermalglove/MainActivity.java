@@ -59,7 +59,10 @@ public class MainActivity extends AppCompatActivity {
                     btConn.setVisibility(Button.VISIBLE);
                 }
                 else {
+                    btConn.setVisibility(Button.GONE);
+                    viewExist.setVisibility(Button.GONE);
                     loginProfileButton.setText(R.string.etg_login_title);
+                    loginOrProfile();
                 }
             }
         });

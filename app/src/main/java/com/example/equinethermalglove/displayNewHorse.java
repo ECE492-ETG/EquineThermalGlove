@@ -40,10 +40,8 @@ public class displayNewHorse extends AppCompatActivity {
     private Spinner limb;
 
     BarChart barChart;
-    ArrayList<Integer> dt = new ArrayList<>();
+    ArrayList<Double> dt = new ArrayList<>();
     String userID;
-
-    // TODO: display battery life
 
     /**
      * Function called when activity is invoked
@@ -58,10 +56,9 @@ public class displayNewHorse extends AppCompatActivity {
         final Button rtn = findViewById(R.id.return_btn);
         final Button save = findViewById(R.id.save_btn);
         horse = findViewById(R.id.horse_name);
-        dt.add(12); dt.add(34); dt.add(21); dt.add(54); dt.add(2); dt.add(88);
         limb = findViewById(R.id.horseLimb);
         userID = dbManager.getAuth().getCurrentUser().getEmail();
-        String[] limbOptions = {"Front Left", "Front Right", "Back Left", "Back Right"}; labels.add("Battery Life %");
+        String[] limbOptions = {"Front Left", "Front Right", "Back Left", "Back Right"};
         ArrayAdapter<String> sAdapt = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, limbOptions);
         limb.setAdapter(sAdapt);
 
@@ -96,7 +93,7 @@ public class displayNewHorse extends AppCompatActivity {
         });
 
         // get the data from bluetooth scan for display
-        //dt = getIntent().getSerializableExtra("data");
+        dt = (ArrayList<Double>) getIntent().getSerializableExtra("data");
 
         // create barchart and display to user
         barChart = findViewById(R.id.barchart);
@@ -113,13 +110,15 @@ public class displayNewHorse extends AppCompatActivity {
     private BarData createData() {
         // TODO: separate battery life from temperatures for display
         ArrayList<BarEntry> values = new ArrayList<>();
-        int x, y;
+        int x;
+        double y;
         // get data from bluetooth read in and set for display
         for (int i = 0; i < maxX; i++) {
             x = i;
             // get the data from bluetooth for display
             y = dt.get(i);
-            values.add(new BarEntry(x, y));
+            //TODO: cast to int if not displayed correctly
+            values.add(new BarEntry(x, (float) y));
         }
 
         BarDataSet set = new BarDataSet(values, SET_LABEL);;
@@ -146,7 +145,7 @@ public class displayNewHorse extends AppCompatActivity {
         barChart.setDrawValueAboveBar(false);
         XAxis x = barChart.getXAxis();
         barChart.getXAxis().setGranularityEnabled(true);
-        labels.add("Thumb"); labels.add("Index"); labels.add("Middle"); labels.add("Ring"); labels.add("Pinky");
+        labels.add("Thumb"); labels.add("Index"); labels.add("Middle"); labels.add("Ring"); labels.add("Pinkie");
         Object[] l = labels.toArray();
         x.setValueFormatter(new ValueFormatter() {
             @Override
