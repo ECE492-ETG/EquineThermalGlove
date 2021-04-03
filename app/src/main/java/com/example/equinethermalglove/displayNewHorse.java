@@ -31,9 +31,9 @@ import java.util.HashMap;
 public class displayNewHorse extends AppCompatActivity {
 
     // global variables
-    private static final int maxX = 6;
-    private static final int maxY = 200;
-    private static final int minY = 0;
+//    private static final int maxX = 5;
+//    private static final int maxY = 200;
+//    private static final int minY = 0;
     private static final String SET_LABEL = "Horse Temperature Data";
     private static final ArrayList<String> labels = new ArrayList<>();
     private EditText horse;
@@ -93,7 +93,7 @@ public class displayNewHorse extends AppCompatActivity {
         });
 
         // get the data from bluetooth scan for display
-        dt = (ArrayList<Double>) getIntent().getSerializableExtra("data");
+        dt = (ArrayList<Double>) getIntent().getExtras().get("data");
 
         // create barchart and display to user
         barChart = findViewById(R.id.barchart);
@@ -113,7 +113,7 @@ public class displayNewHorse extends AppCompatActivity {
         int x;
         double y;
         // get data from bluetooth read in and set for display
-        for (int i = 0; i < maxX; i++) {
+        for (int i = 0; i < dt.size(); i++) {
             x = i;
             // get the data from bluetooth for display
             y = dt.get(i);

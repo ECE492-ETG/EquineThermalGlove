@@ -87,14 +87,20 @@ public class bluetoothReadIn extends AppCompatActivity {
         }
 
         saveBtn.setOnClickListener(v -> {
-            Intent i = new Intent(bluetoothReadIn.this, displayNewHorse.class);
-            // TODO: get data from bluetooth and send to new class
-            ArrayList<Double> data = new ArrayList<>();
-            data.add(Double.valueOf(thumbTemp.getText().toString())); data.add(Double.valueOf(indexTemp.getText().toString()));
-            data.add(Double.valueOf(middleTemp.getText().toString())); data.add(Double.valueOf(ringTemp.getText().toString()));
-            data.add(Double.valueOf(pinkieTemp.getText().toString()));
-            intent.putExtra("data", data);
-            startActivity(i);
+            try {
+                Intent i = new Intent(bluetoothReadIn.this, displayNewHorse.class);
+                ArrayList<Double> data = new ArrayList<>();
+                data.add(Double.valueOf(thumbTemp.getText().toString()));
+                data.add(Double.valueOf(indexTemp.getText().toString()));
+                data.add(Double.valueOf(middleTemp.getText().toString()));
+                data.add(Double.valueOf(ringTemp.getText().toString()));
+                data.add(Double.valueOf(pinkieTemp.getText().toString()));
+                i.putExtra("data", data);
+                startActivity(i);
+            } catch(Exception e) {
+                Log.e(TAG, "Failed to save data");
+                Toast.makeText(bluetoothReadIn.this, "Couldn't save data", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
