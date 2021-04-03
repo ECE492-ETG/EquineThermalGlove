@@ -31,7 +31,7 @@ import java.util.HashMap;
 public class displayNewHorse extends AppCompatActivity {
 
     // global variables
-    private static final int maxX = 6;
+    private static final int maxX = 5;
     private static final int maxY = 200;
     private static final int minY = 0;
     private static final String SET_LABEL = "Horse Temperature Data";
