@@ -182,9 +182,9 @@ public class displayNewHorse extends AppCompatActivity {
         // check if the horse already exists in the database
         if (!horseExists(horseName)) {
             Log.d("horse exists", "false");
-            ArrayList<Integer> emptyData = new ArrayList<>();
+            ArrayList<Double> emptyData = new ArrayList<>();
             HashMap<String, Object> empty = new HashMap<>();
-            emptyData.add(0); emptyData.add(0); emptyData.add(0); emptyData.add(0); emptyData.add(0);
+            emptyData.add(0.0); emptyData.add(0.0); emptyData.add(0.0); emptyData.add(0.0); emptyData.add(0.0);
             empty.put("temp", emptyData);
             String[] limbs = {"frontLeft", "frontRight", "backLeft", "backRight"};
 
