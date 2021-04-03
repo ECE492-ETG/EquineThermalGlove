@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.lang.Double.parseDouble;
 import static java.lang.Integer.parseInt;
 
 public class viewOldDataMain extends AppCompatActivity {
@@ -130,7 +131,7 @@ public class viewOldDataMain extends AppCompatActivity {
                                     // get the average of each measurement array
                                     Double avg = 0.0;
                                     for (int i = 0; i < dt.size(); i++) {
-                                        avg += parseInt(dt.get(i));
+                                        avg += parseDouble(dt.get(i));
                                     }
                                     avg = avg / dt.size();
                                     Log.d("data to be added", document.getId() + " -> " + avg);
