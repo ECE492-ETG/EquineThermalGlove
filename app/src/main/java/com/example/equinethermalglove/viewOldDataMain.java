@@ -38,7 +38,7 @@ public class viewOldDataMain extends AppCompatActivity {
     ArrayAdapter<String> adapt;
     Spinner limbs;
     String userID;
-    HashMap<String, Integer> data = new HashMap<>();
+    HashMap<String, Double> data = new HashMap<>();
     static dbManager dbm;
 
     /**
@@ -114,7 +114,7 @@ public class viewOldDataMain extends AppCompatActivity {
                         limb = "";
                     }
                     // get all data from chosen limb and send to next activity
-                    data.put(horseNames.get(selected), -1);
+                    data.put(horseNames.get(selected), -1.0);
                     dbManager.getdB().collection(userID).document(horseNames.get(selected)).collection(limb).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -128,7 +128,7 @@ public class viewOldDataMain extends AppCompatActivity {
                                     ArrayList<String> dt = new ArrayList<>();
                                     dt.addAll(Arrays.asList(temp.split(" ")));
                                     // get the average of each measurement array
-                                    int avg = 0;
+                                    Double avg = 0.0;
                                     for (int i = 0; i < dt.size(); i++) {
                                         avg += parseInt(dt.get(i));
                                     }
