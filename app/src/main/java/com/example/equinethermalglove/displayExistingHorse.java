@@ -56,17 +56,22 @@ public class displayExistingHorse extends AppCompatActivity {
         dt = (HashMap<String, Double>) getIntent().getSerializableExtra("data");
         maxX = dt.size() - 1;
         Log.d("Check", "about to find horseName");
-        String removed = "";
+        String removedHorseName = "";
+        String removedInit = "";
         // get the horse name chosen and remove it from the rest of the data
         for (Map.Entry<String, Double> e : dt.entrySet()) {
             Log.d("data", e.getKey() + " " + String.valueOf(e.getValue()));
             if (Objects.equals(-1.0, e.getValue())) {
                 SET_LABEL = e.getKey();
-                removed = e.getKey();
+                removedHorseName = e.getKey();
                 Log.d("removed", "Value removed: " + e.getKey());
             }
+            if (Objects.equals(0.0, e.getValue())) {
+                removedInit = e.getKey();
+            }
         }
-        dt.remove(removed);
+        dt.remove(removedHorseName);
+        dt.remove(removedInit);
 
         // setup the bar chart to display data
         barChart = findViewById(R.id.barchart);
