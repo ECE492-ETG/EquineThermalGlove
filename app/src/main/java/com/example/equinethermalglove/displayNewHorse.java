@@ -31,19 +31,17 @@ import java.util.HashMap;
 public class displayNewHorse extends AppCompatActivity {
 
     // global variables
-    private static final int maxX = 6;
-    private static final int maxY = 200;
-    private static final int minY = 0;
+//    private static final int maxX = 5;
+//    private static final int maxY = 200;
+//    private static final int minY = 0;
     private static final String SET_LABEL = "Horse Temperature Data";
     private static final ArrayList<String> labels = new ArrayList<>();
     private EditText horse;
     private Spinner limb;
 
     BarChart barChart;
-    ArrayList<Integer> dt = new ArrayList<>();
+    ArrayList<Double> dt = new ArrayList<>();
     String userID;
-
-    // TODO: display battery life
 
     /**
      * Function called when activity is invoked
@@ -58,10 +56,9 @@ public class displayNewHorse extends AppCompatActivity {
         final Button rtn = findViewById(R.id.return_btn);
         final Button save = findViewById(R.id.save_btn);
         horse = findViewById(R.id.horse_name);
-        dt.add(12); dt.add(34); dt.add(21); dt.add(54); dt.add(2); dt.add(88);
         limb = findViewById(R.id.horseLimb);
         userID = dbManager.getAuth().getCurrentUser().getEmail();
-        String[] limbOptions = {"Front Left", "Front Right", "Back Left", "Back Right"}; labels.add("Battery Life %");
+        String[] limbOptions = {"Front Left", "Front Right", "Back Left", "Back Right"};
         ArrayAdapter<String> sAdapt = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, limbOptions);
         limb.setAdapter(sAdapt);
 
@@ -76,7 +73,7 @@ public class displayNewHorse extends AppCompatActivity {
         // save data to database on save button pressed
         save.setOnClickListener(v -> {
             // get the chosen horse name and limb
-            String h = horse.getText().toString();
+            String h = horse.getText().toString().trim();
             String l;
             if (limb.getSelectedItem() == "Front Right") {
                 l = "frontRight";
@@ -96,7 +93,7 @@ public class displayNewHorse extends AppCompatActivity {
         });
 
         // get the data from bluetooth scan for display
-        //dt = getIntent().getSerializableExtra("data");
+        dt = (ArrayList<Double>) getIntent().getExtras().get("data");
 
         // create barchart and display to user
         barChart = findViewById(R.id.barchart);
@@ -113,13 +110,15 @@ public class displayNewHorse extends AppCompatActivity {
     private BarData createData() {
         // TODO: separate battery life from temperatures for display
         ArrayList<BarEntry> values = new ArrayList<>();
-        int x, y;
+        int x;
+        double y;
         // get data from bluetooth read in and set for display
-        for (int i = 0; i < maxX; i++) {
+        for (int i = 0; i < dt.size(); i++) {
             x = i;
             // get the data from bluetooth for display
             y = dt.get(i);
-            values.add(new BarEntry(x, y));
+            //TODO: cast to int if not displayed correctly
+            values.add(new BarEntry(x, (float) y));
         }
 
         BarDataSet set = new BarDataSet(values, SET_LABEL);;
@@ -146,7 +145,7 @@ public class displayNewHorse extends AppCompatActivity {
         barChart.setDrawValueAboveBar(false);
         XAxis x = barChart.getXAxis();
         barChart.getXAxis().setGranularityEnabled(true);
-        labels.add("Thumb"); labels.add("Index"); labels.add("Middle"); labels.add("Ring"); labels.add("Pinky");
+        labels.add("Thumb"); labels.add("Index"); labels.add("Middle"); labels.add("Ring"); labels.add("Pinkie");
         Object[] l = labels.toArray();
         x.setValueFormatter(new ValueFormatter() {
             @Override
@@ -178,14 +177,16 @@ public class displayNewHorse extends AppCompatActivity {
         HashMap<String, Object> data = new HashMap<>();
         data.put("temp", dt);
         Calendar curDate = Calendar.getInstance();
-        String date = curDate.get(Calendar.DAY_OF_MONTH) + "-" + (curDate.get(Calendar.MONTH) + 1) + "-" + curDate.get(Calendar.YEAR);
+        String date = curDate.get(Calendar.DAY_OF_MONTH) + "-" + (curDate.get(Calendar.MONTH) + 1) + "-" +
+                        curDate.get(Calendar.YEAR) + " " + curDate.get(Calendar.HOUR) + ":" +
+                        curDate.get(Calendar.MINUTE) + ":" + curDate.get(Calendar.SECOND);
 
         // check if the horse already exists in the database
         if (!horseExists(horseName)) {
             Log.d("horse exists", "false");
-            ArrayList<Integer> emptyData = new ArrayList<>();
+            ArrayList<Double> emptyData = new ArrayList<>();
             HashMap<String, Object> empty = new HashMap<>();
-            emptyData.add(0); emptyData.add(0); emptyData.add(0); emptyData.add(0); emptyData.add(0);
+            emptyData.add(0.0); emptyData.add(0.0); emptyData.add(0.0); emptyData.add(0.0); emptyData.add(0.0);
             empty.put("temp", emptyData);
             String[] limbs = {"frontLeft", "frontRight", "backLeft", "backRight"};
 

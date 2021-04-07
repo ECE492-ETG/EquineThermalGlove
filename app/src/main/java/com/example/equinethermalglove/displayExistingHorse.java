@@ -39,7 +39,7 @@ public class displayExistingHorse extends AppCompatActivity {
     private static ArrayList<String> labels = new ArrayList<>();
 
     BarChart barChart;
-    HashMap<String, Integer> dt;
+    HashMap<String, Double> dt;
     private Button rtn;
 
     /**
@@ -53,14 +53,14 @@ public class displayExistingHorse extends AppCompatActivity {
 
         // variable initialization
         rtn = findViewById(R.id.return_btn);
-        dt = (HashMap<String, Integer>) getIntent().getSerializableExtra("data");
+        dt = (HashMap<String, Double>) getIntent().getSerializableExtra("data");
         maxX = dt.size() - 1;
         Log.d("Check", "about to find horseName");
         String removed = "";
         // get the horse name chosen and remove it from the rest of the data
-        for (Map.Entry<String, Integer> e : dt.entrySet()) {
+        for (Map.Entry<String, Double> e : dt.entrySet()) {
             Log.d("data", e.getKey() + " " + String.valueOf(e.getValue()));
-            if (Objects.equals(-1, e.getValue())) {
+            if (Objects.equals(-1.0, e.getValue())) {
                 SET_LABEL = e.getKey();
                 removed = e.getKey();
                 Log.d("removed", "Value removed: " + e.getKey());
@@ -124,10 +124,10 @@ public class displayExistingHorse extends AppCompatActivity {
     public BarData createData() {
         ArrayList<BarEntry> values = new ArrayList<>();
         int x;
-        ArrayList<Integer> y = new ArrayList<>();
+        ArrayList<Double> y = new ArrayList<>();
         int j = 0;
         // sets up each bar for the barchart
-        for (Map.Entry<String, Integer> e : dt.entrySet()) {
+        for (Map.Entry<String, Double> e : dt.entrySet()) {
             labels.add(e.getKey());
             y.add(e.getValue());
             j++;
@@ -135,12 +135,14 @@ public class displayExistingHorse extends AppCompatActivity {
         // reverses the labels and y coordinates so that they are in chronological order
         Collections.reverse(labels);
         Collections.reverse(y);
+        double val;
         for (int i = 0; i < maxX; i++) {
             x = i;
-            values.add(new BarEntry(x, y.get(i)));
+            val = y.get(i);
+            values.add(new BarEntry(x, (float) val));
         }
 
-        BarDataSet set = new BarDataSet(values, SET_LABEL);;
+        BarDataSet set = new BarDataSet(values, SET_LABEL);
 
         BarData data = new BarData(set);
 

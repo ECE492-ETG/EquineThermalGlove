@@ -63,6 +63,7 @@ public class bluetoothScan extends AppCompatActivity {
         bluetoothLeScanner = bluetoothAdapter.getBluetoothLeScanner();
         handler = new Handler();
         leDeviceListAdapter = new LeDeviceListAdapter(this.getLayoutInflater());
+        leDeviceListAdapter.clear();
 
         ListView bleDeviceList = findViewById(R.id.ble_device_list);
         bleDeviceList.setAdapter(leDeviceListAdapter);
