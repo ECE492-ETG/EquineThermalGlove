@@ -73,7 +73,7 @@ public class displayNewHorse extends AppCompatActivity {
         // save data to database on save button pressed
         save.setOnClickListener(v -> {
             // get the chosen horse name and limb
-            String h = horse.getText().toString().trim();
+            String h = horse.getText().toString().trim().toUpperCase();
             String l;
             if (limb.getSelectedItem() == "Front Right") {
                 l = "frontRight";
