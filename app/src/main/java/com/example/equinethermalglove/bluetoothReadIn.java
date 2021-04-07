@@ -96,6 +96,7 @@ public class bluetoothReadIn extends AppCompatActivity {
                 data.add(Double.valueOf(ringTemp.getText().toString()));
                 data.add(Double.valueOf(pinkieTemp.getText().toString()));
                 i.putExtra("data", data);
+                btService.disconnect();
                 startActivity(i);
             } catch(Exception e) {
                 Log.e(TAG, "Failed to save data");

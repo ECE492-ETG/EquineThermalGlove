@@ -73,7 +73,7 @@ public class displayNewHorse extends AppCompatActivity {
         // save data to database on save button pressed
         save.setOnClickListener(v -> {
             // get the chosen horse name and limb
-            String h = horse.getText().toString();
+            String h = horse.getText().toString().trim();
             String l;
             if (limb.getSelectedItem() == "Front Right") {
                 l = "frontRight";
@@ -177,7 +177,9 @@ public class displayNewHorse extends AppCompatActivity {
         HashMap<String, Object> data = new HashMap<>();
         data.put("temp", dt);
         Calendar curDate = Calendar.getInstance();
-        String date = curDate.get(Calendar.DAY_OF_MONTH) + "-" + (curDate.get(Calendar.MONTH) + 1) + "-" + curDate.get(Calendar.YEAR);
+        String date = curDate.get(Calendar.DAY_OF_MONTH) + "-" + (curDate.get(Calendar.MONTH) + 1) + "-" +
+                        curDate.get(Calendar.YEAR) + " " + curDate.get(Calendar.HOUR) + ":" +
+                        curDate.get(Calendar.MINUTE) + ":" + curDate.get(Calendar.SECOND);
 
         // check if the horse already exists in the database
         if (!horseExists(horseName)) {
