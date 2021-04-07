@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -140,8 +141,12 @@ public class viewOldDataMain extends AppCompatActivity {
                             } else {
                                 Log.d("horse data date", "could not read aata");
                             }
-                            intent.putExtra("data", data);
-                            startActivityForResult(intent, 0);
+                            if (data.size() == 2) {
+                                Toast.makeText(viewOldDataMain.this, "No data to display", Toast.LENGTH_SHORT).show();
+                            } else {
+                                intent.putExtra("data", data);
+                                startActivityForResult(intent, 0);
+                            }
                         }
                     });
                 }
