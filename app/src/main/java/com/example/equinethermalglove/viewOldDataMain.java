@@ -186,5 +186,6 @@ public class viewOldDataMain extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent horse) {
         super.onActivityResult(requestCode, resultCode, horse);
+        data.clear();
     }
 }
