@@ -236,15 +236,15 @@ public class bluetoothReadIn extends AppCompatActivity {
             return;
         }
         btService.setCharacteristicNotification(thumb_temp, true);
-        Thread.sleep(200);
+        Thread.sleep(1000);
         btService.setCharacteristicNotification(index_temp, true);
-        Thread.sleep(200);
+        Thread.sleep(1000);
         btService.setCharacteristicNotification(middle_temp, true);
-        Thread.sleep(200);
+        Thread.sleep(1000);
         btService.setCharacteristicNotification(ring_temp, true);
-        Thread.sleep(200);
+        Thread.sleep(1000);
         btService.setCharacteristicNotification(pinkie_temp, true);
-        Thread.sleep(200);
+        Thread.sleep(1000);
         btService.setCharacteristicNotification(battery_life, true);
     }
 }
