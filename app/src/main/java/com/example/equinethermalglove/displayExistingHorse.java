@@ -54,7 +54,7 @@ public class displayExistingHorse extends AppCompatActivity {
         // variable initialization
         rtn = findViewById(R.id.return_btn);
         dt = (HashMap<String, Double>) getIntent().getSerializableExtra("data");
-        maxX = dt.size() - 1;
+        maxX = dt.size() - 2;
         Log.d("Check", "about to find horseName");
         String removedHorseName = "";
         String removedInit = "";
@@ -130,12 +130,10 @@ public class displayExistingHorse extends AppCompatActivity {
         ArrayList<BarEntry> values = new ArrayList<>();
         int x;
         ArrayList<Double> y = new ArrayList<>();
-        int j = 0;
         // sets up each bar for the barchart
         for (Map.Entry<String, Double> e : dt.entrySet()) {
             labels.add(e.getKey());
             y.add(e.getValue());
-            j++;
         }
         // reverses the labels and y coordinates so that they are in chronological order
         Collections.reverse(labels);
