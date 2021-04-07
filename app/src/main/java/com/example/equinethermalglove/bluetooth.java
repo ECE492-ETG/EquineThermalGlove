@@ -194,12 +194,7 @@ public class bluetooth extends Service {
         }
         if (UUID_ETG_Battery.equals(characteristic.getUuid())) {
             final byte[] data = characteristic.getValue();
-            String battery = null;
-            try {
-                battery = new String(data, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
+            String battery = String.valueOf(data[0]) + "%";
             Log.d(TAG, String.format("Received Battery Life: %s", battery));
             intent.putExtra(BATT_DATA, battery);
         } else {
