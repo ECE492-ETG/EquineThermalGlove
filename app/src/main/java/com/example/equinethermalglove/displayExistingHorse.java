@@ -98,10 +98,10 @@ public class displayExistingHorse extends AppCompatActivity {
         YAxis lAxis = barChart.getAxisLeft();
         YAxis rAxis = barChart.getAxisRight();
 
-        lAxis.setGranularity(10f);
+        lAxis.setGranularity(1f);
         lAxis.setAxisMinimum(0);
 
-        rAxis.setGranularity(10f);
+        rAxis.setGranularity(1f);
         rAxis.setAxisMinimum(0);
     }
 
