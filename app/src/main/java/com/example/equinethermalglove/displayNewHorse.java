@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ArrayAdapter;
@@ -12,6 +13,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
@@ -31,11 +33,12 @@ import java.util.HashMap;
 public class displayNewHorse extends AppCompatActivity {
 
     // global variables
-//    private static final int maxX = 5;
-//    private static final int maxY = 200;
-//    private static final int minY = 0;
+    private static final int maxX = 5;
+    private static final float maxT = 50f;
+    private static final float minT = 30f;
+    private static final float maxAxis = 70f;
+    private static ArrayList<String> labels = new ArrayList<>();
     private static final String SET_LABEL = "Horse Temperature Data";
-    private static final ArrayList<String> labels = new ArrayList<>();
     private EditText horse;
     private Spinner limb;
 
@@ -62,8 +65,6 @@ public class displayNewHorse extends AppCompatActivity {
         ArrayAdapter<String> sAdapt = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, limbOptions);
         limb.setAdapter(sAdapt);
 
-        rtn.setVisibility(Button.GONE);
-
         // return if return button pressed
         rtn.setOnClickListener(v -> {
             Intent intent = new Intent(displayNewHorse.this, MainActivity.class);
@@ -89,7 +90,6 @@ public class displayNewHorse extends AppCompatActivity {
             // write the data to the database
             writeToDb(h, l);
             save.setVisibility(Button.GONE);
-            rtn.setVisibility(Button.VISIBLE);
         });
 
         // get the data from bluetooth scan for display
@@ -113,15 +113,24 @@ public class displayNewHorse extends AppCompatActivity {
         int x;
         double y;
         // get data from bluetooth read in and set for display
+        int[] colors = new int[maxX];
         for (int i = 0; i < dt.size(); i++) {
             x = i;
             // get the data from bluetooth for display
             y = dt.get(i);
+            if (y > maxT) {
+                colors[i] = Color.RED;
+            } else if (y < minT) {
+                colors[i] = Color.CYAN;
+            } else {
+                colors[i] = Color.GREEN;
+            }
             //TODO: cast to int if not displayed correctly
             values.add(new BarEntry(x, (float) y));
         }
 
-        BarDataSet set = new BarDataSet(values, SET_LABEL);;
+        BarDataSet set = new BarDataSet(values, SET_LABEL);
+        set.setColors(colors);
 
         return new BarData(set);
     }
@@ -153,15 +162,30 @@ public class displayNewHorse extends AppCompatActivity {
                 return (String) l[(int) value];
             }
         });
+        
+        x.setLabelCount(labels.size());
+
+        LimitLine li1 = new LimitLine(maxT);
+        li1.setLineWidth(5f);
+        li1.setLineColor(Color.RED);
+        LimitLine li2 = new LimitLine(minT);
+        li2.setLineWidth(5f);
+        li2.setLineColor(Color.BLUE);
 
         YAxis lAxis = barChart.getAxisLeft();
         YAxis rAxis = barChart.getAxisRight();
 
         lAxis.setGranularity(1f);
         lAxis.setAxisMinimum(0);
+        lAxis.setAxisMaximum(maxAxis);
+        lAxis.addLimitLine(li1);
+        lAxis.addLimitLine(li2);
 
         rAxis.setGranularity(1f);
         rAxis.setAxisMinimum(0);
+        rAxis.setAxisMaximum(maxAxis);
+        rAxis.addLimitLine(li1);
+        rAxis.addLimitLine(li2);
     }
 
     /**
