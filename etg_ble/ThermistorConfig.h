@@ -25,3 +25,9 @@
 
 // Battery pin to measure voltage
 #define VBATPIN A9
+
+// Delay in ms between calculation & data transmission (This will change the frequency of updates to phone)
+#define localDelay 8000
+
+// Delay in ms between each sample taken (Increase to spread distance between samples, this will make for a larger average, instead of more instantaneous measurements)
+#define intermitentDelay 50
