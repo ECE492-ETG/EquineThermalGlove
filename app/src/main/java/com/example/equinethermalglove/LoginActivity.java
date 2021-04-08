@@ -87,6 +87,8 @@ public class LoginActivity extends AppCompatActivity {
             String email = emailField.getText().toString().trim().toLowerCase();
             String password = passwordField.getText().toString().trim();
             signIn(email, password);
+        } else {
+            Toast.makeText(LoginActivity.this, "Invalid Credentials", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -118,7 +120,7 @@ public class LoginActivity extends AppCompatActivity {
         String email = emailField.getText().toString().trim();
 
         if(email.isEmpty()) {
-            emailField.setError("Please enter your email.");
+            emailField.setError("Please enter an email.");
             return false;
         }
         else if(!Pattern.matches("^([a-zA-Z0-9_\\-\\.]+)@([a-zA-Z0-9_\\-\\.]+)\\.([a-zA-Z]{2,5})$", email)) {
@@ -147,7 +149,7 @@ public class LoginActivity extends AppCompatActivity {
             return false;
         }
 
-        emailField.setError(null);
+        passwordField.setError(null);
         return true;
     }
 
@@ -157,8 +159,6 @@ public class LoginActivity extends AppCompatActivity {
     private void attemptRegistration() {
         if (emailIsValid() & passwordIsValid()) {
             createAccount();
-        } else {
-            return;
         }
     }
 
