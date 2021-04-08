@@ -59,9 +59,7 @@ int32_t etgBatteryCharId;
 /**************************************************************************/
 void setup(void)
 {
-  //while (!Serial); // required for Flora & Micro
   delay(500);
-
   boolean success;
 
   Serial.begin(115200);
@@ -77,7 +75,6 @@ void setup(void)
   {
     error(F("Couldn't find Bluefruit, make sure it's in CoMmanD mode & check wiring?"));
   }
-  Serial.println( F("OK!") );
 
   /* Perform a factory reset to make sure everything is in a known state */
   Serial.println(F("Performing a factory reset: "));
@@ -165,102 +162,121 @@ void loop(void)
   uint8_t i, j;
   float average[NUMTHERMISTORS];
   
-  // Takes a specified number of samples per each thermisor
-  for (i=0; i< NUMSAMPLES; i++) {
-   sample[0][i] = analogRead(ADC_0);
-   sample[1][i] = analogRead(ADC_1);
-   sample[2][i] = analogRead(ADC_2);
-   sample[3][i] = analogRead(ADC_3);
-   sample[4][i] = analogRead(ADC_4);
-   delay(10);
-  }
-  
-  /* Calculate average resustabce for each thermistor */
-  for (i=0; i< NUMTHERMISTORS; i++) {
+   /* Checks connection, note it is called twice due to a bug that returns okay innstead of '1' or '0'
+    * on first attempt after a successful connection has been made */
+   ble.println("AT+GAPGETCONN");
+   ble.println("AT+GAPGETCONN");
+   ble.readline();
+   
+   /* Only take measurement while connected via BT to central */
+   if ( (strcmp(ble.buffer, "1") == 0) ) {
+      Serial.print(F("Connected!!\n"));
+      
+      /* Takes a specified number of samples per each thermisor */
+      for (i=0; i< NUMSAMPLES; i++) {
+       sample[0][i] = analogRead(ADC_0);
+       sample[1][i] = analogRead(ADC_1);
+       sample[2][i] = analogRead(ADC_2);
+       sample[3][i] = analogRead(ADC_3);
+       sample[4][i] = analogRead(ADC_4);
+       delay(intermitentDelay);
+      }
+      
+      /* Calculate average resustabce for each thermistor */
+      for (i=0; i< NUMTHERMISTORS; i++) {
+        
+        /* Ensure the average is cleared for the new calculation */
+        average[i] = 0;
     
-    /* Ensure the average is cleared for the new calculation */
-    average[i] = 0;
-
-    /* Average all the samples per thermistor */
-    for (j=0; j< NUMSAMPLES; j++) {
-       average[i] += sample[i][j];
-    }
-    average[i] /= NUMSAMPLES;
+        /* Average all the samples per thermistor */
+        for (j=0; j< NUMSAMPLES; j++) {
+           average[i] += sample[i][j];
+        }
+        average[i] /= NUMSAMPLES;
+        
+        /* Convert the ADC reading to resistance in ohms */
+        average[i] = 1023 / average[i] - 1;
+        average[i] = SERIESRESISTOR / average[i];
+      }
+      
     
-    /* Convert the ADC reading to resistance in ohms */
-    average[i] = 1023 / average[i] - 1;
-    average[i] = SERIESRESISTOR / average[i];
+      /* Convert our resistance into temperature for each thermistor */
+      float steinhart[NUMTHERMISTORS];
+      float resolut;
+      long rounded[NUMTHERMISTORS];
+      for (i=0; i< NUMTHERMISTORS; i++) {
+        steinhart[i] = average[i] / THERMISTORNOMINAL;       // (R/Ro)
+        steinhart[i] = log(steinhart[i]);                    // ln(R/Ro)
+        steinhart[i] /= BCOEFFICIENT;                        // 1/B * ln(R/Ro)
+        steinhart[i] += 1.0 / (TEMPERATURENOMINAL + 273.15); // + (1/To)
+        steinhart[i] = 1.0 / steinhart[i];                   // Invert
+        steinhart[i] -= 273.15;                              // convert absolute temp to C
+    
+        // Set resolution to +/- 0.5 *C
+        resolut = round(steinhart[i] * 2);
+        steinhart[i] = resolut / 2;
+    
+        // Round to 1 decimal place
+        rounded[i] = (long) (steinhart[i] * 10L);
+        steinhart[i] = (float) rounded[i] / 10.0;
+      }
+      
+      /* Measure our battery */
+      float measuredvbat = analogRead(VBATPIN);
+      measuredvbat *= 2;     // we divided by 2, so multiply back
+      measuredvbat *= 3.3;   // Multiply by 3.3V, our reference voltage
+      measuredvbat /= 1024;  // convert to voltage
+      float referenceVbat = MAXBAT - MINBAT;
+      int percentvbat = round ( ( (measuredvbat - 3.7) / referenceVbat ) * 100);
+      Serial.print(measuredvbat);
+    
+      /* Our % measurement is relative to our battery, this is in the event of a new bat with a slightly higher max value */
+      if (percentvbat > 100) {
+        percentvbat = 100;
+      }
+    
+      /* Command is sent when \n (\r) or println is called */
+      /* AT+GATTCHAR=CharacteristicID,value */
+      // --------------------------
+      ble.print( F("AT+GATTCHAR=") );
+      ble.print( etgMeasureCharId1 );
+      ble.print( F(",") );
+      ble.println(steinhart[0]);          // Thumb
+      // --------------------------
+      ble.print( F("AT+GATTCHAR=") );
+      ble.print( etgMeasureCharId2 );
+      ble.print( F(",") );
+      ble.println(steinhart[1]);          // Index
+      // --------------------------
+      ble.print( F("AT+GATTCHAR=") );
+      ble.print( etgMeasureCharId3 );
+      ble.print( F(",") );
+      ble.println(steinhart[2]);          // Middle
+      // --------------------------
+      ble.print( F("AT+GATTCHAR=") );
+      ble.print( etgMeasureCharId4 );
+      ble.print( F(",") );
+      ble.println(steinhart[3]);          // Ring
+      // --------------------------
+      ble.print( F("AT+GATTCHAR=") );
+      ble.print( etgMeasureCharId5 );
+      ble.print( F(",") );
+      ble.println(steinhart[4]);          // Pinky
+      // --------------------------
+      ble.print( F("AT+GATTCHAR=") );
+      ble.print( etgBatteryCharId );
+      ble.print( F(",") );
+      ble.println(percentvbat);           // Battery
+
+      // Check if command executed (Recieving OK from app)
+      if ( !ble.waitForOK() ) {
+        Serial.println(F("Failed to get response!"));
+      }
+  
+  } else { // Do nothing!
+    Serial.print(F("Not Connected\n"));
   }
   
-
-  // Convert our resistance into temperature for each thermistor
-  float steinhart[NUMTHERMISTORS];
-  float resolut;
-  long rounded[NUMTHERMISTORS];
-  for (i=0; i< NUMTHERMISTORS; i++) {
-    steinhart[i] = average[i] / THERMISTORNOMINAL;       // (R/Ro)
-    steinhart[i] = log(steinhart[i]);                    // ln(R/Ro)
-    steinhart[i] /= BCOEFFICIENT;                        // 1/B * ln(R/Ro)
-    steinhart[i] += 1.0 / (TEMPERATURENOMINAL + 273.15); // + (1/To)
-    steinhart[i] = 1.0 / steinhart[i];                   // Invert
-    steinhart[i] -= 273.15;                              // convert absolute temp to C
-
-    // Set resolution to +/- 0.5 *C
-    resolut = round(steinhart[i] * 2);
-    steinhart[i] = resolut / 2;
-
-    // Round to 1 decimal place
-    rounded[i] = (long) (steinhart[i] * 10L);
-    steinhart[i] = (float) rounded[i] / 10.0;
-  }
-  
-  // Measure our battery!
-  float measuredvbat = analogRead(VBATPIN);
-  measuredvbat *= 2;     // we divided by 2, so multiply back
-  measuredvbat *= 3.3;   // Multiply by 3.3V, our reference voltage
-  measuredvbat /= 1024;  // convert to voltage
-  float referenceVbat = 4.3- 3.7;
-  int percentvbat = round ( ( (measuredvbat - 3.7) / referenceVbat ) * 100);
-  
-  /* Command is sent when \n (\r) or println is called */
-  /* AT+GATTCHAR=CharacteristicID,value */
-  // --------------------------
-  ble.print( F("AT+GATTCHAR=") );
-  ble.print( etgMeasureCharId1 );
-  ble.print( F(",") );
-  ble.println(steinhart[0]);          // Thumb
-  // --------------------------
-  ble.print( F("AT+GATTCHAR=") );
-  ble.print( etgMeasureCharId2 );
-  ble.print( F(",") );
-  ble.println(steinhart[1]);          // Index
-  // --------------------------
-  ble.print( F("AT+GATTCHAR=") );
-  ble.print( etgMeasureCharId3 );
-  ble.print( F(",") );
-  ble.println(steinhart[2]);          // Middle
-  // --------------------------
-  ble.print( F("AT+GATTCHAR=") );
-  ble.print( etgMeasureCharId4 );
-  ble.print( F(",") );
-  ble.println(steinhart[3]);          // Ring
-  // --------------------------
-  ble.print( F("AT+GATTCHAR=") );
-  ble.print( etgMeasureCharId5 );
-  ble.print( F(",") );
-  ble.println(steinhart[4]);          // Pinky
-  // --------------------------
-  ble.print( F("AT+GATTCHAR=") );
-  ble.print( etgBatteryCharId );
-  ble.print( F(",") );
-  ble.println(percentvbat);           // Battery
-  
-  /* Check if command executed OK */
-  if ( !ble.waitForOK() )
-  {
-    Serial.println(F("Failed to get response!"));
-  }
-
   /* Delay before next measurement update */
-  delay(2000);
+  delay(localDelay);
 }
