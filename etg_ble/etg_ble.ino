@@ -226,9 +226,15 @@ void loop(void)
       measuredvbat *= 2;     // we divided by 2, so multiply back
       measuredvbat *= 3.3;   // Multiply by 3.3V, our reference voltage
       measuredvbat /= 1024;  // convert to voltage
-      float referenceVbat = 4.3- 3.7;
+      float referenceVbat = MAXBAT - MINBAT;
       int percentvbat = round ( ( (measuredvbat - 3.7) / referenceVbat ) * 100);
       Serial.print(measuredvbat);
+    
+      /* Our % measurement is relative to our battery, this is in the event of a new bat with a slightly higher max value */
+      if (percentvbat > 100) {
+        percentvbat = 100;
+      }
+    
       /* Command is sent when \n (\r) or println is called */
       /* AT+GATTCHAR=CharacteristicID,value */
       // --------------------------
