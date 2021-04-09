@@ -2,12 +2,14 @@ package com.example.equinethermalglove;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
@@ -50,10 +52,12 @@ public class displayExistingHorse extends AppCompatActivity {
 
     // global variables
     private static int maxX;
-    private static final int maxY = 200;
-    private static final int minY = 0;
     private static String SET_LABEL = "";
+    private static final float maxT = 50f;
+    private static final float minT = 30f;
+    private static final float maxAxis = 70f;
     private static ArrayList<String> labels = new ArrayList<>();
+    ArrayList<Double> y = new ArrayList<>();
 
     BarChart barChart;
     HashMap<String, Double> dt;
@@ -117,14 +121,29 @@ public class displayExistingHorse extends AppCompatActivity {
             }
         });
 
+        x.setLabelCount(labels.size());
+
+        LimitLine li1 = new LimitLine(maxT);
+        li1.setLineWidth(5f);
+        li1.setLineColor(Color.RED);
+        LimitLine li2 = new LimitLine(minT);
+        li2.setLineWidth(5f);
+        li2.setLineColor(Color.BLUE);
+
         YAxis lAxis = barChart.getAxisLeft();
         YAxis rAxis = barChart.getAxisRight();
 
         lAxis.setGranularity(1f);
         lAxis.setAxisMinimum(0);
+        lAxis.setAxisMaximum(maxAxis);
+        lAxis.addLimitLine(li1);
+        lAxis.addLimitLine(li2);
 
         rAxis.setGranularity(1f);
         rAxis.setAxisMinimum(0);
+        rAxis.setAxisMaximum(maxAxis);
+        rAxis.addLimitLine(li1);
+        rAxis.addLimitLine(li2);
     }
 
     /**
@@ -146,28 +165,38 @@ public class displayExistingHorse extends AppCompatActivity {
     public BarData createData() {
         ArrayList<BarEntry> values = new ArrayList<>();
         int x;
-        ArrayList<Double> y = new ArrayList<>();
         // sets up each bar for the barchart
         for (Map.Entry<String, Double> e : dt.entrySet()) {
             labels.add(e.getKey());
-            y.add(e.getValue());
         }
+        Collections.sort(labels);
         // reverses the labels and y coordinates so that they are in chronological order
         Collections.reverse(labels);
-        Collections.reverse(y);
+        for (int i = 0; i < labels.size(); i++) {
+            y.add(dt.get(labels.get(i)));
+        }
         for (int i = 0; i < labels.size(); i++) {
             String[] k = labels.get(i).split(" ");
             labels.set(i, k[0]);
         }
-
+        Log.d("data check", labels + " " + y);
+        int[] colors = new int[maxX];
         double val;
         for (int i = 0; i < maxX; i++) {
             x = i;
             val = y.get(i);
             values.add(new BarEntry(x, (float) val));
+            if (val > maxT) {
+                colors[i] = Color.RED;
+            } else if (val < minT) {
+                colors[i] = Color.CYAN;
+            } else {
+                colors[i] = Color.GREEN;
+            }
         }
 
         BarDataSet set = new BarDataSet(values, SET_LABEL);
+        set.setColors(colors);
 
         BarData data = new BarData(set);
 
