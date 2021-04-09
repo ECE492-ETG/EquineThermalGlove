@@ -135,6 +135,7 @@ public class viewOldDataMain extends AppCompatActivity {
                                         avg += parseDouble(dt.get(i));
                                     }
                                     avg = avg / dt.size();
+                                    avg = Math.round(avg * 2) / 2.0;
                                     Log.d("data to be added", document.getId() + " -> " + avg);
                                     data.put(document.getId(), avg);
                                 }

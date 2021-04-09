@@ -111,17 +111,18 @@ public class displayExistingHorse extends AppCompatActivity {
     public void appearance() {
         barChart.getDescription().setEnabled(false);
         barChart.setDrawValueAboveBar(false);
+        barChart.getAxisRight().setDrawGridLines(false);
+        barChart.getAxisLeft().setDrawGridLines(false);
+        barChart.getXAxis().setDrawGridLines(false);
+
+        // set the labels to empty
         XAxis x = barChart.getXAxis();
-        Object[] l = labels.toArray();
-        // set the labels for each bar in the barchart
         x.setValueFormatter(new ValueFormatter() {
             @Override
             public String getFormattedValue(float value) {
-                return (String) l[(int) value];
+                return (String) " ";
             }
         });
-
-        x.setLabelCount(labels.size());
 
         LimitLine li1 = new LimitLine(maxT);
         li1.setLineWidth(5f);
