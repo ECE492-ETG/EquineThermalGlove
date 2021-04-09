@@ -169,6 +169,10 @@ public class displayNewHorse extends AppCompatActivity {
     private void appearance() {
         barChart.getDescription().setEnabled(false);
         barChart.setDrawValueAboveBar(false);
+        barChart.getAxisRight().setDrawGridLines(false);
+        barChart.getAxisLeft().setDrawGridLines(false);
+        barChart.getXAxis().setDrawGridLines(false);
+        
         XAxis x = barChart.getXAxis();
         barChart.getXAxis().setGranularityEnabled(true);
         labels.add("Thumb"); labels.add("Index"); labels.add("Middle"); labels.add("Ring"); labels.add("Pinkie");
