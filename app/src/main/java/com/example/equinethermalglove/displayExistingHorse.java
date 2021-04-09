@@ -170,8 +170,7 @@ public class displayExistingHorse extends AppCompatActivity {
             labels.add(e.getKey());
         }
         Collections.sort(labels);
-        // reverses the labels and y coordinates so that they are in chronological order
-        Collections.reverse(labels);
+        // get the data and properly order it for display
         for (int i = 0; i < labels.size(); i++) {
             y.add(dt.get(labels.get(i)));
         }
