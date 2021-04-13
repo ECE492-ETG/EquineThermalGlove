@@ -27,8 +27,6 @@ import java.util.regex.Pattern;
 public class LoginActivity extends AppCompatActivity {
 
     // global variables
-    private FirebaseAuth auth = FirebaseAuth.getInstance();
-
     private EditText emailField;
     private EditText passwordField;
 
@@ -68,7 +66,7 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         // return to main activity upon successful login
-        auth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
+        dbManager.getAuth().addAuthStateListener(new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 if(firebaseAuth.getCurrentUser() != null) {
@@ -100,7 +98,7 @@ public class LoginActivity extends AppCompatActivity {
      *      user password
      */
     private void signIn(String email, String password) {
-        auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+        dbManager.getAuth().signInWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(!task.isSuccessful()) {
@@ -170,7 +168,7 @@ public class LoginActivity extends AppCompatActivity {
         final String email = emailField.getText().toString().trim().toLowerCase();
         String password = passwordField.getText().toString().trim();
 
-        auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+        dbManager.getAuth().createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()) {

@@ -12,8 +12,6 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity {
 
-    private FirebaseAuth auth = FirebaseAuth.getInstance();
-
     /**
      * First activity loaded when app is opened
      * @param savedInstanceState
@@ -27,10 +25,6 @@ public class MainActivity extends AppCompatActivity {
         final Button btConn = findViewById(R.id.btConn);
         final Button viewExist = findViewById(R.id.viewExisting);
         final Button loginProfileButton = findViewById(R.id.login_profile_button);
-
-        // only show buttons after user has registered or is logged in.
-//        viewExist.setVisibility(Button.VISIBLE);
-//        btConn.setVisibility(Button.VISIBLE);
 
         // start bluetooth connection
         btConn.setOnClickListener(v -> {
@@ -50,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Redirect user to login page if no account logged in
-        auth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
+        dbManager.getAuth().addAuthStateListener(new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 if(firebaseAuth.getCurrentUser() != null) {
@@ -73,10 +67,10 @@ public class MainActivity extends AppCompatActivity {
      * allows user to login or register
      */
     public void loginOrProfile() {
-        if(auth.getCurrentUser() != null) {
+        if(dbManager.getAuth().getCurrentUser() != null) {
             // go to profile
             // for now just logout
-            auth.signOut();
+            dbManager.getAuth().signOut();
             Toast.makeText(MainActivity.this, "You've been Logged Out", Toast.LENGTH_SHORT).show();
         }
         else { // go to login/register activity

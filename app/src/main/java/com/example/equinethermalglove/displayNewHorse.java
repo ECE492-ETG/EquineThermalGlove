@@ -21,9 +21,7 @@ import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
@@ -125,7 +123,6 @@ public class displayNewHorse extends AppCompatActivity {
      *      the data to be displayed
      */
     private BarData createData() {
-        // TODO: separate battery life from temperatures for display
         ArrayList<BarEntry> values = new ArrayList<>();
         int x;
         double y;
@@ -142,7 +139,6 @@ public class displayNewHorse extends AppCompatActivity {
             } else {
                 colors[i] = Color.GREEN;
             }
-            //TODO: cast to int if not displayed correctly
             values.add(new BarEntry(x, (float) y));
         }
 
