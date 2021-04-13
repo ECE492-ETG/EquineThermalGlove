@@ -15,7 +15,7 @@
 #define TEMPERATURENOMINAL 25
 
 // Number of samples per thermisor - Controls the length of the measurement
-#define NUMSAMPLES 5
+#define NUMSAMPLES 10
 
 // Beta coefficient for thermal calculation (3000-4000)
 #define BCOEFFICIENT 3950
