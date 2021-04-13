@@ -21,7 +21,6 @@
 #include "Adafruit_BLE.h"
 #include "Adafruit_BluefruitLE_SPI.h"
 #include "Adafruit_BluefruitLE_UART.h"
-
 #include "BluefruitConfig.h"
 #include "ThermistorConfig.h"
 
@@ -29,18 +28,10 @@
   #include <SoftwareSerial.h>
 #endif
 
-/* ...or hardware serial, which does not need the RTS/CTS pins. Uncomment this line */
-// Adafruit_BluefruitLE_UART ble(BLUEFRUIT_HWSERIAL_NAME, BLUEFRUIT_UART_MODE_PIN);
-
 /* ...hardware SPI, using SCK/MOSI/MISO hardware SPI pins and then user selected CS/IRQ/RST */
 Adafruit_BluefruitLE_SPI ble(BLUEFRUIT_SPI_CS, BLUEFRUIT_SPI_IRQ, BLUEFRUIT_SPI_RST);
 
-/* ...software SPI, using SCK/MOSI/MISO user-defined SPI pins and then user selected CS/IRQ/RST */
-//Adafruit_BluefruitLE_SPI ble(BLUEFRUIT_SPI_SCK, BLUEFRUIT_SPI_MISO,
-//                             BLUEFRUIT_SPI_MOSI, BLUEFRUIT_SPI_CS,
-//                             BLUEFRUIT_SPI_IRQ, BLUEFRUIT_SPI_RST);
-
-// A small helper
+/* A small helper */
 void error(const __FlashStringHelper*err) {
   Serial.println(err);
   while (1);
@@ -88,10 +79,6 @@ void setup(void)
   Serial.println("Requesting Bluefruit info:");
   /* Print Bluefruit information */
   ble.info();
-
-  // this line is particularly required for Flora, but is a good idea
-  // anyways for the super long lines ahead!
-  // ble.setInterCharWriteDelay(5); // 5 ms
 
   /* Change the device name to make it easier to find */
   Serial.println(F("Setting device name to 'Equine Thermal Glove': "));
@@ -142,9 +129,6 @@ void setup(void)
 //  We'd need a registered service (basically get a shortened 16-bit UUID) to put in one of the two allowed advertised service spots,
 //  which is what the last 4 bytes of the array are (for heart rate measurement in the below case. It's like heart rate and location of 
 //  device I believe).
-//  /* Add the ETG Service to the advertising data (needed for Nordic apps to detect the service) */
-//  Serial.print(F("Adding ETG Service UUID to the advertising payload: "));
-//  ble.sendCommandCheckOK( F("AT+GAPSETADVDATA=02-01-06-05-02-0d-18-0a-18") );
 
   /* Reset the device for the new service setting changes to take effect */
   Serial.print(F("Performing a SW reset (service changes require a reset): "));
@@ -153,10 +137,10 @@ void setup(void)
   Serial.println();
 }
 
-// Defining the arrays that will hold each thermal sensors sample measurement
+/* Defining the arrays that will hold each thermal sensors sample measurement */
 int sample[NUMTHERMISTORS][NUMSAMPLES];
 
-/** Send randomized heart rate data continuously **/
+/* Send randomized heart rate data continuously */
 void loop(void)
 { 
   uint8_t i, j;
@@ -227,14 +211,14 @@ void loop(void)
       measuredvbat *= 3.3;   // Multiply by 3.3V, our reference voltage
       measuredvbat /= 1024;  // convert to voltage
       float referenceVbat = MAXBAT - MINBAT;
-      int percentvbat = round ( ( (measuredvbat - 3.7) / referenceVbat ) * 100);
+      int percentvbat = round ( ( (measuredvbat - MINBAT) / referenceVbat ) * 100);
       Serial.print(measuredvbat);
-    
+
       /* Our % measurement is relative to our battery, this is in the event of a new bat with a slightly higher max value */
       if (percentvbat > 100) {
         percentvbat = 100;
       }
-    
+      
       /* Command is sent when \n (\r) or println is called */
       /* AT+GATTCHAR=CharacteristicID,value */
       // --------------------------
@@ -272,11 +256,10 @@ void loop(void)
       if ( !ble.waitForOK() ) {
         Serial.println(F("Failed to get response!"));
       }
-  
-  } else { // Do nothing!
+  } else {
     Serial.print(F("Not Connected\n"));
   }
-  
+
   /* Delay before next measurement update */
   delay(localDelay);
 }
