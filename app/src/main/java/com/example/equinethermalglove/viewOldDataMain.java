@@ -15,23 +15,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Map;
 
 import static java.lang.Double.parseDouble;
-import static java.lang.Integer.parseInt;
 
 public class viewOldDataMain extends AppCompatActivity {
 
@@ -41,7 +33,6 @@ public class viewOldDataMain extends AppCompatActivity {
     Spinner limbs;
     String userID;
     HashMap<String, Double> data = new HashMap<>();
-    static dbManager dbm;
 
     /**
      * function called when activity is invoked
@@ -140,7 +131,7 @@ public class viewOldDataMain extends AppCompatActivity {
                                     data.put(document.getId(), avg);
                                 }
                             } else {
-                                Log.d("horse data date", "could not read aata");
+                                Log.d("horse data date", "could not read data");
                             }
                             if (data.size() == 2) {
                                 Toast.makeText(viewOldDataMain.this, "No data to display", Toast.LENGTH_SHORT).show();
@@ -159,7 +150,6 @@ public class viewOldDataMain extends AppCompatActivity {
                final int selected = position;
                 @Override
                 public void onClick(View view) {
-                    // TODO: delete horse data from database
                     // optional ask in fragment before delete.
 
                     dbManager.getdB().collection(userID).document(horseNames.get(selected)).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
